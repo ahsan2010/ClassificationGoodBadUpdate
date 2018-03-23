@@ -11,6 +11,8 @@ import java.util.Set;
 import org.apache.commons.math3.analysis.differentiation.FiniteDifferencesDifferentiator;
 import org.apache.derby.tools.sysinfo;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.netlib.util.intW;
 
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
@@ -51,11 +53,28 @@ public class FeatureExtractor {
 	public final int BAD_UPDATE = 1;
 
 	public List<String> feature_name = Arrays.asList(new String[] {
-			"TargetSDK", "MinimumSDK", "DiffTargetMinSDK","AppUpdateSize", "AdSize", 
+			"DiffTargetMinSDK","AppUpdateSize", "AdSize", 
 			"NumberOfAds", "NumberOfPermission","NumberOfDangerousPermission","NumberOfOtherPermission", "NumberOfActivity", 
-			"NumberOfReceiver", "NumberOfService", "TargetSDKChange","MiniumSDKChange", "AdsChange", 
-			"ActivityChange", "ReceiverChange", "ServiceChange", "PermissionChange","DangerousPermissionChange", 
-			"OtherPermissionChange", "AppSizeChange", "AdsSizeChange","Target" 
+			"NumberOfReceiver", "NumberOfService", 
+			"TargetSDKChange_Increase","TargetSDKChange_Decrease","TargetSDKChange_Nochange",
+			"MiniumSDKChange_Increase", "MiniumSDKChange_Decrease","MiniumSDKChange_Nochange",
+			"AdsChange_Increase","AdsChange_Decrease","AdsChange_Nochange", 
+			"ActivityChange_Increase","ActivityChange_Decrease","ActivityChange_Nochange", 
+			"ReceiverChange_Increase","ReceiverChange_Decrease","ReceiverChange_Nochange", 
+			"ServiceChange_Increase","ServiceChange_Decrease","ServiceChange_Nochange", 
+			"PermissionChange_Increase","PermissionChange_Decrease","PermissionChange_Nochange",
+			"DangerousPermissionChange_Increase","DangerousPermissionChange_Decrease","DangerousPermissionChange_Nochange", 
+			"OtherPermissionChange_Increase","OtherPermissionChange_Decrease","OtherPermissionChange_Nochange", 
+			"AppSizeChange_Increase","AppSizeChange_Decrease","AppSizeChange_Nochange", 
+			"AdsSizeChange_Increase","AdsSizeChange_Decrease","AdsSizeChange_Nochange",
+			"Duration_Release",
+			/*"TargetSDK_1","TargetSDK_2","TargetSDK_3","TargetSDK_4","TargetSDK_5","TargetSDK_6","TargetSDK_7","TargetSDK_8","TargetSDK_9","TargetSDK_10",
+			"TargetSDK_11","TargetSDK_12","TargetSDK_13","TargetSDK_14","TargetSDK_15","TargetSDK_16","TargetSDK_17","TargetSDK_18","TargetSDK_19","TargetSDK_20",
+			"TargetSDK_21","TargetSDK_22","TargetSDK_23","TargetSDK_24","TargetSDK_25","TargetSDK_26","TargetSDK_27",
+			"MinimumSDK_1","MinimumSDK_2","MinimumSDK_3","MinimumSDK_4","MinimumSDK_5","MinimumSDK_6","MinimumSDK_7","MinimumSDK_8","MinimumSDK_9","MinimumSDK_10",
+			"MinimumSDK_11","MinimumSDK_12","MinimumSDK_13","MinimumSDK_14","MinimumSDK_15","MinimumSDK_16","MinimumSDK_17","MinimumSDK_18","MinimumSDK_19","MinimumSDK_20",
+			"MinimumSDK_21","MinimumSDK_22","MinimumSDK_23","MinimumSDK_24","MinimumSDK_25","MinimumSDK_26","MinimumSDK_27",*/
+			"Target" 
 			 });
 
 	
@@ -121,24 +140,51 @@ public class FeatureExtractor {
 		return -1;
 	}
 
-	int getChange(int oldTarget, int presentTarget) {
+	int getChange(int oldTarget, int presentTarget,Map<String, Double> features,int index) {
+		features.put(feature_name.get(index), 0.0);
+		features.put(feature_name.get(index + 1), 0.0);
+		features.put(feature_name.get(index + 2), 0.0);
+		
 		if (presentTarget > oldTarget) {
+			features.put(feature_name.get(index), 1.0);
 			return 2;
 		} else if (presentTarget < oldTarget) {
+			features.put(feature_name.get(index + 1), 1.0);
 			return 3;
 		}
+		features.put(feature_name.get(index + 2), 1.0);
 		return 1;
 	}
 
-	int getChange(double oldTarget, double presentTarget) {
+	int getChange(double oldTarget, double presentTarget, Map<String, Double> features,int index) {
+		features.put(feature_name.get(index), 0.0);
+		features.put(feature_name.get(index + 1), 0.0);
+		features.put(feature_name.get(index + 2), 0.0);
+		
 		if (presentTarget > oldTarget) {
+			features.put(feature_name.get(index), 1.0);
 			return 2;
 		} else if (presentTarget < oldTarget) {
+			features.put(feature_name.get(index + 1), 1.0);
 			return 3;
 		}
+		features.put(feature_name.get(index + 2), 1.0);
 		return 1;
 	}
 
+	public void setSDKVersion(Map<String, Double> features,int index, int sdkVersion){
+		
+		for(int i = 1 ; i <= 27 ; i ++ ){
+			if(i == sdkVersion){
+				features.put(feature_name.get(index), 1.0);
+			}else{
+				features.put(feature_name.get(index), 0.0);
+			}
+			index ++ ;
+		}
+	}
+	
+	
 	public Map<String, Double> generateFeatures(String appName, UpdateTable presentUpdate, UpdateTable oldUpdate,
 			Parser p) {
 
@@ -160,29 +206,27 @@ public class FeatureExtractor {
 			double beforeRating = updateRatingInfo.get(beforeKey).getAggregatedRating();
 			double updateRating = updateRatingInfo.get(updateKey).getAggregatedRating();
 
-			features.put(feature_name.get(0), (double) sdkInfo.get(updateKey).targetSDK);
-			features.put(feature_name.get(1), (double) sdkInfo.get(updateKey).minimumSDK);
-			features.put(feature_name.get(2),
+			//features.put(feature_name.get(0), (double) sdkInfo.get(updateKey).targetSDK);
+			//features.put(feature_name.get(1), (double) sdkInfo.get(updateKey).minimumSDK);
+			features.put(feature_name.get(0),
 					(double) Math.abs(sdkInfo.get(updateKey).targetSDK) - sdkInfo.get(updateKey).minimumSDK);
-			features.put(feature_name.get(3), (double) updateSize.get(updateKey));
-			features.put(feature_name.get(4), (double) updateAdSize.get(updateKey));
+			features.put(feature_name.get(1), (double) updateSize.get(updateKey));
+			features.put(feature_name.get(2), (double) updateAdSize.get(updateKey));
 			if (appUseAd.containsKey(updateKey)) {
-				features.put(feature_name.get(5), (double) appUseAd.get(updateKey).getAdsNames().size());
+				features.put(feature_name.get(3), (double) appUseAd.get(updateKey).getAdsNames().size());
 			} else {
-				features.put(feature_name.get(5), (double) 0);
+				features.put(feature_name.get(3), (double) 0);
 			}
 
-			features.put(feature_name.get(6), (double) manifestInfoPresent.get("PERMISSION"));
-			features.put(feature_name.get(7), (double) manifestInfoPresent.get("DANGEROUS_PERMISSION"));
-			features.put(feature_name.get(8), (double) manifestInfoPresent.get("OTHER_PERMISSION"));
-			features.put(feature_name.get(9), (double) manifestInfoPresent.get("ACTIVITY"));
-			features.put(feature_name.get(10), (double) manifestInfoPresent.get("RECEIVER"));
-			features.put(feature_name.get(11), (double) manifestInfoPresent.get("SERVICE"));
+			features.put(feature_name.get(4), (double) manifestInfoPresent.get("PERMISSION"));
+			features.put(feature_name.get(5), (double) manifestInfoPresent.get("DANGEROUS_PERMISSION"));
+			features.put(feature_name.get(6), (double) manifestInfoPresent.get("OTHER_PERMISSION"));
+			features.put(feature_name.get(7), (double) manifestInfoPresent.get("ACTIVITY"));
+			features.put(feature_name.get(8), (double) manifestInfoPresent.get("RECEIVER"));
+			features.put(feature_name.get(9), (double) manifestInfoPresent.get("SERVICE"));
 
-			features.put(feature_name.get(12),
-					(double) getChange(sdkInfo.get(beforeKey).targetSDK, sdkInfo.get(updateKey).targetSDK));
-			features.put(feature_name.get(13),
-					(double) getChange(sdkInfo.get(beforeKey).minimumSDK, sdkInfo.get(updateKey).minimumSDK));
+			getChange(sdkInfo.get(beforeKey).targetSDK, sdkInfo.get(updateKey).targetSDK,features, 10);
+			getChange(sdkInfo.get(beforeKey).minimumSDK, sdkInfo.get(updateKey).minimumSDK, features, 13);
 
 			int presentAd = 0;
 			int oldAd = 0;
@@ -193,29 +237,24 @@ public class FeatureExtractor {
 				oldAd = appUseAd.get(beforeKey).getAdsNames().size();
 			}
 
-			features.put(feature_name.get(14), (double) getChange(oldAd, presentAd));
-			features.put(feature_name.get(15),
-					(double) getChange(manifestInfoPresent.get("ACTIVITY"), manifestInfoOld.get("ACTIVITY")));
-			features.put(feature_name.get(16),
-					(double) getChange(manifestInfoPresent.get("RECEIVER"), manifestInfoOld.get("RECEIVER")));
-			features.put(feature_name.get(17),
-					(double) getChange(manifestInfoPresent.get("SERVICE"), manifestInfoOld.get("SERVICE")));
-			features.put(feature_name.get(18),
-					(double) getChange(manifestInfoPresent.get("PERMISSION"), manifestInfoOld.get("PERMISSION")));
-			features.put(feature_name.get(19), (double) getChange(manifestInfoPresent.get("DANGEROUS_PERMISSION"),
-					manifestInfoOld.get("DANGEROUS_PERMISSION")));
-			features.put(feature_name.get(20), (double) getChange(manifestInfoPresent.get("OTHER_PERMISSION"),
-					manifestInfoOld.get("OTHER_PERMISSION")));
+			getChange(oldAd, presentAd,features,16);
+			getChange(manifestInfoPresent.get("ACTIVITY"), manifestInfoOld.get("ACTIVITY"), features, 19);
+			getChange(manifestInfoPresent.get("RECEIVER"), manifestInfoOld.get("RECEIVER"),features,21);
+			getChange(manifestInfoPresent.get("SERVICE"), manifestInfoOld.get("SERVICE"),features,25);
+			getChange(manifestInfoPresent.get("PERMISSION"), manifestInfoOld.get("PERMISSION"),features,28);
+			getChange(manifestInfoPresent.get("DANGEROUS_PERMISSION"),manifestInfoOld.get("DANGEROUS_PERMISSION"),features, 31);
+			getChange(manifestInfoPresent.get("OTHER_PERMISSION"),manifestInfoOld.get("OTHER_PERMISSION"), features, 34);
+			getChange(updateSize.get(beforeKey), updateSize.get(updateKey), features, 37);
+			getChange(updateAdSize.get(beforeKey), updateAdSize.get(updateKey), features, 40);
 
-			features.put(feature_name.get(21),
-					(double) getChange(updateSize.get(beforeKey), updateSize.get(updateKey)));
-			features.put(feature_name.get(22),
-					(double) getChange(updateAdSize.get(beforeKey), updateAdSize.get(updateKey)));
-
+			features.put(feature_name.get(43),(double)Days.daysBetween(DateUtil.formatter.parseDateTime(oldUpdate.getRELEASE_DATE()), DateUtil.formatter.parseDateTime(presentUpdate.getRELEASE_DATE())).getDays());
+			//setSDKVersion(features,43,sdkInfo.get(updateKey).targetSDK);
+			//setSDKVersion(features,70,sdkInfo.get(updateKey).minimumSDK);
+			
 			if (updateRating > beforeRating) {
-				features.put(feature_name.get(23), (double) GOOD_UPDATE);
+				features.put(feature_name.get(97), (double) GOOD_UPDATE);
 			} else {
-				features.put(feature_name.get(23), (double) BAD_UPDATE);
+				features.put(feature_name.get(97), (double) BAD_UPDATE);
 			}
 
 		} catch (Exception e) {
