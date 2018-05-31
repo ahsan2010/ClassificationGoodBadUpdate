@@ -34,7 +34,15 @@ public class UpdateRatingInformation {
 	
 	protected int updateLifeTimeInDays;
 	
-	
+	public double getNegativeRatingRatio(){
+		
+		double negRating = 0.0;
+		
+		negRating = (this.oneStar + this.twoStar)/(this.oneStar + this.twoStar + this.threeStar + this.fourStar + this.fiveStar) * 100 ;
+		
+		return negRating;
+		
+	}
 	
 	
 	public double getTotalStar() {

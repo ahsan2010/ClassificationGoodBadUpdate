@@ -130,6 +130,10 @@ public class GenerateValidUpdates {
 					continue;
 				}
 				
+				if(updateRatingInfo.get(key).getTotalStar() < 30){
+					continue;
+				}
+				
 				String presentKey = "AndroidManifest-" + appName + "-" + presentUpdate.getVERSION_CODE() + "-"
 						+ presentUpdate.getRELEASE_DATE().replace("-", "_") + ".xml";
 
@@ -149,8 +153,6 @@ public class GenerateValidUpdates {
 				if(!updateSize.containsKey(key) || !updateAdSize.containsKey(key)){
 					continue;
 				}*/
-				
-				
 				
 				writer.write(presentUpdate.getAPP_ID());
 				writer.write(presentUpdate.getAPP_UPDATE_ID());

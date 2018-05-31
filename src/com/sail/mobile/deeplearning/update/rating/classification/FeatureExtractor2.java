@@ -12,7 +12,6 @@ import org.apache.commons.math3.analysis.differentiation.FiniteDifferencesDiffer
 import org.apache.derby.tools.sysinfo;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.junit.After;
 import org.netlib.util.intW;
 
 import com.csvreader.CsvReader;
@@ -33,7 +32,7 @@ import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateTab
  * 
  *
  */
-public class FeatureExtractor {
+public class FeatureExtractor2 {
 
 	HashMap<String, ArrayList<UpdateTable>> appUpdates;
 	Map<String, UpdateRatingInformation> updateRatingInfo;
@@ -54,13 +53,11 @@ public class FeatureExtractor {
 	double threshold_value = 0.1;
 	
 	public final int ZERO_PADDING = 0;
-	public final int GOOD_UPDATE = 0;
-	public final int BAD_UPDATE = 1;
-	public final int NEUTRAL_UPDATE = 2;
+	public final int GOOD_UPDATE = 1;
+	public final int BAD_UPDATE = 2;
+	public final int NEUTRAL_UPDATE = 3;
 	
 	public final int THRESHOLD_REVEIEW = 30;
-	
-	public int SEQUENCE = 0;
 
 	public List<String> feature_name = Arrays.asList(new String[] {
 			"DiffTargetMinSDK","AppUpdateSize", "AdSize", 
@@ -89,7 +86,7 @@ public class FeatureExtractor {
 			 });
 
 	
-	public final int MAX_UPDATE = 16;
+	public final int MAX_UPDATE = 10;
 	
 	public void readAnalyzedAppName (){
 		try{
@@ -380,21 +377,20 @@ public class FeatureExtractor {
 		
 		int missing_feature_generation_update = 0;
 		Parser p = new Parser();
-
-		SEQUENCE = 16;
-		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/Updated_data_neg_rating/sequence_data/";
-		CsvWriter trianingWriter = new CsvWriter(path+"Neg_Ratio"+SEQUENCE+".csv");
 		
+		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/Updated_data_neg_rating/";
 		
-		trianingWriter.write("AppName");
-		trianingWriter.write("VersionCode");
+		CsvWriter trianingSeqWriter = new CsvWriter(path + "data_negativity_seq_100_nn.csv");
+		
+		trianingSeqWriter.write("AppName");
+		trianingSeqWriter.write("VersionCode");
 		
 		for (int j = 0; j < feature_name.size(); j++) {
-			trianingWriter.write(feature_name.get(j));
-			
+			trianingSeqWriter.write(feature_name.get(j));
 		}
 		
-		trianingWriter.endRecord();
+		trianingSeqWriter.endRecord();
+		
 		
 		Set<String> androidDangeroudPermission = AdsInputDataLoader
 				.readAndroidPermission(ANDROID_DANGEROUS_PERMISSION_LIST);// android.permissions.WRITE
@@ -455,11 +451,12 @@ public class FeatureExtractor {
 				total_analyzed_updates ++;
 				++ total_update;
 			}
-			writeFeatureDataII(trianingWriter,appFeature);
+			//writeFeatureDataII(trianingWriter,testingWriter,appFeature);
+			writeFeatureDataIII(trianingSeqWriter,appFeature,100, appName);
+			//addZeroPadding(writer, total_update, appName);
 		}
 
-		trianingWriter.close();
-		
+		trianingSeqWriter.close();
 		
 		System.out.println("------------------------------------------------------");
 		
@@ -528,14 +525,13 @@ public class FeatureExtractor {
 	}
 	
 	
-	public void writeFeatureDataII(CsvWriter trainingWriter, ArrayList<Features> appFeatures) {
+	public void writeFeatureDataII(CsvWriter trainingWriter,CsvWriter testingWriter, ArrayList<Features> appFeatures) {
 		try {
 			int index = appFeatures.size() - MAX_UPDATE;
 			if(index <= 0) return;
 			// Writing training information
-			//System.out.println("SIZE: " + appFeatures.size());
-			int size = SEQUENCE;
-			for(int i = appFeatures.size() - size ; i < appFeatures.size(); i ++ ){
+			int size = 1;
+			for(int i = index ; i < index + size; i ++ ){
 				trainingWriter.write(appFeatures.get(i).getAppName());
 				trainingWriter.write(appFeatures.get(i).getVersionCode());
 				for (int j = 0; j < feature_name.size(); j++) {
@@ -549,7 +545,7 @@ public class FeatureExtractor {
 		}
 	}
 	
-	public void writeFeatureDataIII(CsvWriter trainingWriter,CsvWriter testingWriter, ArrayList<Features> appFeatures, int maxSeq, String appName) {
+	public void writeFeatureDataIII(CsvWriter trainingWriter, ArrayList<Features> appFeatures, int maxSeq, String appName) {
 		try {
 			int index = appFeatures.size() - maxSeq;
 			
@@ -608,7 +604,7 @@ public class FeatureExtractor {
 	}
 
 	public static void main(String[] args) throws Exception {
-		FeatureExtractor ob = new FeatureExtractor();
+		FeatureExtractor2 ob = new FeatureExtractor2();
 		ob.loadSizeInformation();
 		ob.init();
 		ob.FeatureExtractor();

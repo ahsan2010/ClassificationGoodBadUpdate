@@ -12,7 +12,6 @@ import org.apache.commons.math3.analysis.differentiation.FiniteDifferencesDiffer
 import org.apache.derby.tools.sysinfo;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.junit.After;
 import org.netlib.util.intW;
 
 import com.csvreader.CsvReader;
@@ -33,7 +32,7 @@ import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateTab
  * 
  *
  */
-public class FeatureExtractor {
+public class FeatureExtractor3 {
 
 	HashMap<String, ArrayList<UpdateTable>> appUpdates;
 	Map<String, UpdateRatingInformation> updateRatingInfo;
@@ -59,8 +58,6 @@ public class FeatureExtractor {
 	public final int NEUTRAL_UPDATE = 2;
 	
 	public final int THRESHOLD_REVEIEW = 30;
-	
-	public int SEQUENCE = 0;
 
 	public List<String> feature_name = Arrays.asList(new String[] {
 			"DiffTargetMinSDK","AppUpdateSize", "AdSize", 
@@ -85,11 +82,11 @@ public class FeatureExtractor {
 			"MinimumSDK_1","MinimumSDK_2","MinimumSDK_3","MinimumSDK_4","MinimumSDK_5","MinimumSDK_6","MinimumSDK_7","MinimumSDK_8","MinimumSDK_9","MinimumSDK_10",
 			"MinimumSDK_11","MinimumSDK_12","MinimumSDK_13","MinimumSDK_14","MinimumSDK_15","MinimumSDK_16","MinimumSDK_17","MinimumSDK_18","MinimumSDK_19","MinimumSDK_20",
 			"MinimumSDK_21","MinimumSDK_22","MinimumSDK_23","MinimumSDK_24","MinimumSDK_25","MinimumSDK_26","MinimumSDK_27",
-			"Target","Neg_ratio" 
+			"Target" 
 			 });
 
 	
-	public final int MAX_UPDATE = 16;
+	public final int MAX_UPDATE = 10;
 	
 	public void readAnalyzedAppName (){
 		try{
@@ -289,7 +286,7 @@ public class FeatureExtractor {
 			getChange(updateSize.get(beforeKey), updateSize.get(updateKey), features, 37);
 			getChange(updateAdSize.get(beforeKey), updateAdSize.get(updateKey), features, 40);
 
-			//System.out.println(presentUpdate.getRELEASE_DATE() +" " + oldUpdate.getRELEASE_DATE());
+			System.out.println(presentUpdate.getRELEASE_DATE() +" " + oldUpdate.getRELEASE_DATE());
 			features.put(feature_name.get(43),(double)Days.daysBetween(DateUtil.formatterWithHyphen.parseDateTime(oldUpdate.getRELEASE_DATE()), DateUtil.formatterWithHyphen.parseDateTime(presentUpdate.getRELEASE_DATE())).getDays());
 			//setSDKVersion(features,43,sdkInfo.get(updateKey).targetSDK);
 			//setSDKVersion(features,70,sdkInfo.get(updateKey).minimumSDK);
@@ -297,32 +294,29 @@ public class FeatureExtractor {
 			features.put(feature_name.get(44),beforeRating);
 			features.put(feature_name.get(45), updateRatingInfo.get(beforeKey).getNegativeRatingRatio());
 			setSDKVersion(features,46,sdkInfo.get(updateKey).targetSDK);
-			setSDKVersion(features,73,sdkInfo.get(updateKey).minimumSDK);
+			setSDKVersion(features,73,sdkInfo.get(updateKey).targetSDK);
 			
 			
 			
 			double negativityRatio = getNegativityRatio(updates, index, appName);
-			double afterNegativity = updateRatingInfo.get(updateKey).getNegativeRatingRatio();
 			
 			
-			features.put(feature_name.get(101), afterNegativity);
-			/*
-			if(negativityRatio  > 1.0 + 0.15){
-				features.put(feature_name.get(100), (double) BAD_UPDATE);
-			}else if (negativityRatio  < 1.0 - 0.25	){
+			
+			/*if(negativityRatio  > 1.0 + 0.15){
 				features.put(feature_name.get(100), (double) GOOD_UPDATE);
+			}else if (negativityRatio  < 1.0 - 0.15){
+				features.put(feature_name.get(100), (double) BAD_UPDATE);
 			}else{
 				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
 			}*/
 			
-			/*
 			if ((updateRating - beforeRating) >= threshold_value) {
 				features.put(feature_name.get(100), (double) GOOD_UPDATE);
 			} else if((updateRating - beforeRating)<= -threshold_value){
 				features.put(feature_name.get(100), (double) BAD_UPDATE);
 			}else{
 				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
-			}*/
+			}
 			
 			
 			/*if ((updateRating ) > beforeRating) {
@@ -330,14 +324,21 @@ public class FeatureExtractor {
 			} else {
 				features.put(feature_name.get(46), (double) BAD_UPDATE);
 			}*/
+
 			
-			if(afterNegativity > 20){
-				features.put(feature_name.get(100), (double) BAD_UPDATE);
-			}else if (afterNegativity < 5){
-				features.put(feature_name.get(100), (double) GOOD_UPDATE);
-			}else{
-				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
-			}
+			writerDiff.write(appName);
+			writerDiff.write(presentUpdate.getVERSION_CODE());
+			writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).getAggregatedRating()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).getOneStar() + updateRatingInfo.get(beforeKey).getTwoStar()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).getFourStar() + updateRatingInfo.get(beforeKey).getFiveStar()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).getThreeStar()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).getTotalStar()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).getAggregatedRating()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).getOneStar() + updateRatingInfo.get(updateKey).getTwoStar()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).getFourStar() + updateRatingInfo.get(updateKey).getFiveStar()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).getThreeStar()));
+			writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).getTotalStar()));
+			writerDiff.endRecord();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -374,6 +375,8 @@ public class FeatureExtractor {
 		return true;
 	}
 
+	CsvWriter writerDiff = new CsvWriter(
+			"/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/diff_data_rating.csv");
 	
 	public void FeatureExtractor() throws Exception {
 		
@@ -381,20 +384,61 @@ public class FeatureExtractor {
 		int missing_feature_generation_update = 0;
 		Parser p = new Parser();
 
-		SEQUENCE = 16;
-		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/Updated_data_neg_rating/sequence_data/";
-		CsvWriter trianingWriter = new CsvWriter(path+"Neg_Ratio"+SEQUENCE+".csv");
+		CsvWriter writer = new CsvWriter(
+				"/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/updates_Data.csv");
+		writer.write("AppName");
+		writer.write("VersionCode");
+		
+		
+		
+		writerDiff.write("APP_Name");
+		writerDiff.write("Version_Code");
+		writerDiff.write("Previous_Rating");
+		writerDiff.write("Previous_Negative_Rating");
+		writerDiff.write("Previous_Positive_Rating");
+		writerDiff.write("Previous_Neutral_Rating");
+		writerDiff.write("Previous_Total_Rating");
+		writerDiff.write("Present_Rating");
+		writerDiff.write("Present_Negative_Rating");
+		writerDiff.write("Present_Positive_Rating");
+		writerDiff.write("Present_Neutral_Rating");
+		writerDiff.write("Present_Total_Rating");
+		writerDiff.endRecord();
+		
+		
+		CsvWriter trianingWriter = new CsvWriter("/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/training_nn_neg_ratio_3_2_Seq_1.csv");
+		CsvWriter testingWriter = new CsvWriter("/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/testing_nn_neg_ratio_3_2_Seq_1.csv");
+		
+		
+		CsvWriter trianingSeqWriter = new CsvWriter("/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/training_seq_50_nn.csv");
+		CsvWriter testingSewWriter = new CsvWriter("/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/testing_seq_50_nn.csv");
 		
 		
 		trianingWriter.write("AppName");
 		trianingWriter.write("VersionCode");
+		testingWriter.write("AppName");
+		testingWriter.write("VersionCode");
+		
+		
+		trianingSeqWriter.write("AppName");
+		trianingSeqWriter.write("VersionCode");
+		testingSewWriter.write("AppName");
+		testingSewWriter.write("VersionCode");
+		
 		
 		for (int j = 0; j < feature_name.size(); j++) {
+			writer.write(feature_name.get(j));
 			trianingWriter.write(feature_name.get(j));
-			
+			testingWriter.write(feature_name.get(j));
+			trianingSeqWriter.write(feature_name.get(j));
+			testingSewWriter.write(feature_name.get(j));
 		}
 		
+		writer.endRecord();
+		testingWriter.endRecord();
 		trianingWriter.endRecord();
+		trianingSeqWriter.endRecord();
+		testingSewWriter.endRecord();
 		
 		Set<String> androidDangeroudPermission = AdsInputDataLoader
 				.readAndroidPermission(ANDROID_DANGEROUS_PERMISSION_LIST);// android.permissions.WRITE
@@ -455,12 +499,18 @@ public class FeatureExtractor {
 				total_analyzed_updates ++;
 				++ total_update;
 			}
-			writeFeatureDataII(trianingWriter,appFeature);
+			writeFeatureDataII(trianingWriter,testingWriter,appFeature);
+			writeFeatureDataIII(trianingSeqWriter,testingSewWriter,appFeature,50, appName);
+			addZeroPadding(writer, total_update, appName);
 		}
 
+		writerDiff.close();
+		writer.close();
 		trianingWriter.close();
-		
-		
+		testingWriter.close();
+		trianingSeqWriter.close();
+		testingSewWriter.close();
+
 		System.out.println("------------------------------------------------------");
 		
 		System.out.println("Problem feature genreation ["+missing_feature_generation_update+"] updates");
@@ -528,14 +578,13 @@ public class FeatureExtractor {
 	}
 	
 	
-	public void writeFeatureDataII(CsvWriter trainingWriter, ArrayList<Features> appFeatures) {
+	public void writeFeatureDataII(CsvWriter trainingWriter,CsvWriter testingWriter, ArrayList<Features> appFeatures) {
 		try {
 			int index = appFeatures.size() - MAX_UPDATE;
 			if(index <= 0) return;
 			// Writing training information
-			//System.out.println("SIZE: " + appFeatures.size());
-			int size = SEQUENCE;
-			for(int i = appFeatures.size() - size ; i < appFeatures.size(); i ++ ){
+			int size = 1;
+			for(int i = index ; i < index + size; i ++ ){
 				trainingWriter.write(appFeatures.get(i).getAppName());
 				trainingWriter.write(appFeatures.get(i).getVersionCode());
 				for (int j = 0; j < feature_name.size(); j++) {
@@ -608,7 +657,7 @@ public class FeatureExtractor {
 	}
 
 	public static void main(String[] args) throws Exception {
-		FeatureExtractor ob = new FeatureExtractor();
+		FeatureExtractor3 ob = new FeatureExtractor3();
 		ob.loadSizeInformation();
 		ob.init();
 		ob.FeatureExtractor();
