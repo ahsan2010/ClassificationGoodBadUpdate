@@ -43,9 +43,10 @@ public class PostHandle extends DefaultHandler {
 
 	Map<String,Integer> manifestInfo  = new HashMap<String,Integer>();
 	
-	
-	public static String ANDROID_DANGEROUS_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/dangerous_permission_list.csv";
-	public static String ANDROID_ALL_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/android_permission_list.csv";
+	public static String ROOT = "/home/ahsan/SampleApks/result_Previous_25_04_2018";
+
+	public static String ANDROID_DANGEROUS_PERMISSION_LIST = ROOT + "/PermissionAnalysis/dangerous_permission_list.csv";
+	public static String ANDROID_ALL_PERMISSION_LIST = ROOT + "/PermissionAnalysis/android_permission_list.csv";
 	Set<String> androidDangeroudPermission = AdsInputDataLoader.readAndroidPermission(ANDROID_DANGEROUS_PERMISSION_LIST);// android.permissions.WRITE
 	Set<String> androidPermissions = AdsInputDataLoader.readAndroidPermission(ANDROID_ALL_PERMISSION_LIST); // android.permissions.WRITE
 	

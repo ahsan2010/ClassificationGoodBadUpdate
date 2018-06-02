@@ -729,10 +729,10 @@ public class FeatureExtractorUpdated {
 
 	public static void main(String[] args) throws Exception {
 		FeatureExtractorUpdated ob = new FeatureExtractorUpdated();
-		/*ob.loadSizeInformation();
+		ob.loadSizeInformation();
 		ob.init();
-		ob.FeatureExtractor();*/
-		ob.addManifestInfo();
+		ob.FeatureExtractor();
+		//ob.addManifestInfo();
 		System.out.println("Program finishes successfully");
 	}
 

@@ -40,10 +40,13 @@ public class FeatureExtractor2 {
 	Map<String, SDKCsvInfo> sdkInfo = new HashMap<String, SDKCsvInfo>();
 	Set<String> manifestFilesList = new HashSet<String>();
 
-	public static String MANIFEST_FILE_LOCATION = "/home/ahsan/SampleApks/result/AndroidManifest/";
-	public static String MISSING_MANIFEST_FILE_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/missing_manifest_files.csv";
-	public static String ANDROID_DANGEROUS_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/dangerous_permission_list.csv";
-	public static String ANDROID_ALL_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/android_permission_list.csv";
+	
+	public static String ROOT = "/home/ahsan/SampleApks/result_Previous_25_04_2018";
+	
+	public static String MANIFEST_FILE_LOCATION =  ROOT + "/AndroidManifest/";
+	public static String MISSING_MANIFEST_FILE_LIST = ROOT + "/PermissionAnalysis/missing_manifest_files.csv";
+	public static String ANDROID_DANGEROUS_PERMISSION_LIST = ROOT + "/PermissionAnalysis/dangerous_permission_list.csv";
+	public static String ANDROID_ALL_PERMISSION_LIST = ROOT + "/PermissionAnalysis/android_permission_list.csv";
 
 	Map<String, String> varifiedAdPackageMapGroup = FileUtil.readVerfiedAdList(Constants.VARIFIED_AD_PACKAGE_LIST);
 	Map<String, Double> updateAdSize = new HashMap<String, Double>();
@@ -328,12 +331,19 @@ public class FeatureExtractor2 {
 				features.put(feature_name.get(46), (double) BAD_UPDATE);
 			}*/
 			
-			if(afterNegativity > 20){
+			/*if(afterNegativity > 20){
 				features.put(feature_name.get(100), (double) BAD_UPDATE);
 			}else if (afterNegativity < 5){
 				features.put(feature_name.get(100), (double) GOOD_UPDATE);
 			}else{
 				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
+			}*/
+			
+			
+			if(afterNegativity > 20){
+				features.put(feature_name.get(100), (double) BAD_UPDATE);
+			}else {
+				features.put(feature_name.get(100), (double) GOOD_UPDATE);
 			}
 			
 		} catch (Exception e) {
@@ -378,7 +388,7 @@ public class FeatureExtractor2 {
 		int missing_feature_generation_update = 0;
 		Parser p = new Parser();
 		
-		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/Updated_data_neg_rating/";
+		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data_June/";
 		
 		CsvWriter trianingSeqWriter = new CsvWriter(path + "data_negativity_seq_100_nn.csv");
 		

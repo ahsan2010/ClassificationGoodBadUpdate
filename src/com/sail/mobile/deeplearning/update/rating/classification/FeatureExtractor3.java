@@ -385,7 +385,7 @@ public class FeatureExtractor3 {
 		Parser p = new Parser();
 
 		CsvWriter writer = new CsvWriter(
-				"/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/updates_Data.csv");
+				"/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/updates_Data_two_category.csv");
 		writer.write("AppName");
 		writer.write("VersionCode");
 		
