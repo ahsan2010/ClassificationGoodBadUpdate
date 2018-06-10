@@ -26,7 +26,7 @@ public class Constants {
 	public static String csvSdkVersionInfoPath = ROOT +"/scripts/SDK_Versions_Report.csv";
 	//all_app_update_2016_Apps.csv
 	public static final String APP_UPDATE_TABLE_PATH_RATING = ROOT + "/scripts/all_app_update_2016_Apps.csv";
-	public static final String APP_UPDATE_TABLE_PATH = ROOT + "/scripts/app_update_2016_valid.csv";
+	public static final String APP_UPDATE_TABLE_PATH = ROOT + "/scripts/studied_app_updates_final_2016.csv";
 	public static final String ADS_UPDATE_DATA_PATH = ROOT + "/scripts/Update_Verified__Group_Ads_Usage_Info_Overtime.csv";
 	public static String APP_CSV_PATH = ROOT + "/scripts/app_top_2016.csv";
 	public static final String CLOSED_APP_List = ROOT +"/scripts/closed_app.csv";
