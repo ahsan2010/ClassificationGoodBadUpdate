@@ -305,15 +305,15 @@ public class FeatureExtractor2 {
 			double afterNegativity = updateRatingInfo.get(updateKey).getNegativeRatingRatio();
 			
 			
-			features.put(feature_name.get(101), afterNegativity);
-			/*
+			features.put(feature_name.get(101), negativityRatio);
+			
 			if(negativityRatio  > 1.0 + 0.15){
 				features.put(feature_name.get(100), (double) BAD_UPDATE);
 			}else if (negativityRatio  < 1.0 - 0.25	){
 				features.put(feature_name.get(100), (double) GOOD_UPDATE);
 			}else{
 				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
-			}*/
+			}
 			
 			/*
 			if ((updateRating - beforeRating) >= threshold_value) {
@@ -390,7 +390,7 @@ public class FeatureExtractor2 {
 		
 		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data_June/";
 		
-		CsvWriter trianingSeqWriter = new CsvWriter(path + "data_negativity_seq_100_nn.csv");
+		CsvWriter trianingSeqWriter = new CsvWriter(path + "data_for_negativity_all_seq_100_nn.csv");
 		
 		trianingSeqWriter.write("AppName");
 		trianingSeqWriter.write("VersionCode");
@@ -581,7 +581,7 @@ public class FeatureExtractor2 {
 					trainingWriter.endRecord();
 				}
 				
-				// Add Zero Padding
+				/*// Add Zero Padding
 				
 				for(int i = 0 ; i < Math.abs(index) ; i ++ ){
 					trainingWriter.write(appName);
@@ -590,7 +590,7 @@ public class FeatureExtractor2 {
 						trainingWriter.write("0");
 					}
 					trainingWriter.endRecord();
-				}
+				}*/
 			}
 			
 		} catch (Exception e) {
