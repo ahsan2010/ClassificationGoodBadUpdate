@@ -109,6 +109,30 @@ public class FeatureExtractorUpdated {
 		System.out.println("Total Manifest File Information [" + manifestList.size() + "]");
 	}
 
+	public List<String> feature_name_old = Arrays.asList(new String[] { "DiffTargetMinSDK", "AppUpdateSize", "AdSize",
+			"NumberOfAds", "NumberOfPermission", "NumberOfDangerousPermission", "NumberOfOtherPermission",
+			"NumberOfActivity", "NumberOfReceiver", "NumberOfService", "TargetSDKChange_Increase",
+			"TargetSDKChange_Decrease", "TargetSDKChange_Nochange", "MiniumSDKChange_Increase",
+			"MiniumSDKChange_Decrease", "MiniumSDKChange_Nochange", "AdsChange_Increase", "AdsChange_Decrease",
+			"AdsChange_Nochange", "ActivityChange_Increase", "ActivityChange_Decrease", "ActivityChange_Nochange",
+			"ReceiverChange_Increase", "ReceiverChange_Decrease", "ReceiverChange_Nochange", "ServiceChange_Increase",
+			"ServiceChange_Decrease", "ServiceChange_Nochange", "PermissionChange_Increase",
+			"PermissionChange_Decrease", "PermissionChange_Nochange", "DangerousPermissionChange_Increase",
+			"DangerousPermissionChange_Decrease", "DangerousPermissionChange_Nochange",
+			"OtherPermissionChange_Increase", "OtherPermissionChange_Decrease", "OtherPermissionChange_Nochange",
+			"AppSizeChange_Increase", "AppSizeChange_Decrease", "AppSizeChange_Nochange", "AdsSizeChange_Increase",
+			"AdsSizeChange_Decrease", "AdsSizeChange_Nochange", "Duration_Release", "Prev_Rating", "Prev_Neg_Rating",
+			"TargetSDK_1", "TargetSDK_2", "TargetSDK_3", "TargetSDK_4", "TargetSDK_5", "TargetSDK_6", "TargetSDK_7",
+			"TargetSDK_8", "TargetSDK_9", "TargetSDK_10", "TargetSDK_11", "TargetSDK_12", "TargetSDK_13",
+			"TargetSDK_14", "TargetSDK_15", "TargetSDK_16", "TargetSDK_17", "TargetSDK_18", "TargetSDK_19",
+			"TargetSDK_20", "TargetSDK_21", "TargetSDK_22", "TargetSDK_23", "TargetSDK_24", "TargetSDK_25",
+			"TargetSDK_26", "TargetSDK_27", "MinimumSDK_1", "MinimumSDK_2", "MinimumSDK_3", "MinimumSDK_4",
+			"MinimumSDK_5", "MinimumSDK_6", "MinimumSDK_7", "MinimumSDK_8", "MinimumSDK_9", "MinimumSDK_10",
+			"MinimumSDK_11", "MinimumSDK_12", "MinimumSDK_13", "MinimumSDK_14", "MinimumSDK_15", "MinimumSDK_16",
+			"MinimumSDK_17", "MinimumSDK_18", "MinimumSDK_19", "MinimumSDK_20", "MinimumSDK_21", "MinimumSDK_22",
+			"MinimumSDK_23", "MinimumSDK_24", "MinimumSDK_25", "MinimumSDK_26", "MinimumSDK_27", "Target",
+			"Neg_ratio" });
+	
 	public List<String> feature_name = Arrays.asList(new String[] { "DiffTargetMinSDK", "AppUpdateSize", "AdSize",
 			"NumberOfAds", "NumberOfPermission", "NumberOfDangerousPermission", "NumberOfOtherPermission",
 			"NumberOfActivity", "NumberOfReceiver", "NumberOfService", "TargetSDKChange_Increase",
