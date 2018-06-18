@@ -563,7 +563,7 @@ public static Map<String,AppTable> readAppData(){
 	}
 	
 	public static void investigateSingleApp(){
-		String investigatedAppName = "10539";
+		String investigatedAppName = "9828";
 		for(String appKey : appDailyRating.keySet()){
 			String appId = appKey.split(",")[0].trim();
 			String date = appKey.split(",")[1].trim();

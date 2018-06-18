@@ -130,7 +130,22 @@ public class AdsInputDataLoader
 		return appUpdateRecords;
 	}
 	
-	
+	public static Map<String,Double> extractAppSize(String fileName){
+		Map<String,Double> appUpdateSizeList = new HashMap<String, Double>();
+		HashMap<String,ArrayList<UpdateTable>> appUpdates = readUpdateData(fileName);
+		try{
+			for(String appName : appUpdates.keySet()){
+				for(int i = 0 ; i < appUpdates.get(appName).size() ; i ++){
+					UpdateTable update = appUpdates.get(appName).get(i);
+					String updateKey = appName + "-" + update.getVERSION_CODE();
+					appUpdateSizeList.put(updateKey, Double.parseDouble(update.getAPK_SIZE()));
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return appUpdateSizeList;
+	}
 	
 	
 public static Map<String,AppTable> readAppData(){

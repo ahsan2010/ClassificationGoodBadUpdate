@@ -19,6 +19,7 @@ import com.sail.mobile.deeplearning.update.rating.classification.Loader.AdsInput
 import com.sail.mobile.deeplearning.update.rating.classification.Loader.SDKInfoLoader;
 import com.sail.mobile.deeplearning.update.rating.classification.common.Constants;
 import com.sail.mobile.deeplearning.update.rating.classification.model.AdInformation;
+import com.sail.mobile.deeplearning.update.rating.classification.model.AppTable;
 import com.sail.mobile.deeplearning.update.rating.classification.model.SDKCsvInfo;
 import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateRatingInformation;
 import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateTable;
@@ -39,8 +40,8 @@ public class FeatureExtractorUpdated {
 
 	public static String MANIFEST_FILE_LOCATION = "/home/ahsan/SampleApks/result/AndroidManifest/";
 	public static String MISSING_MANIFEST_FILE_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/missing_manifest_files.csv";
-	public static String ANDROID_DANGEROUS_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/dangerous_permission_list.csv";
-	public static String ANDROID_ALL_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/android_permission_list.csv";
+	public static String ANDROID_DANGEROUS_PERMISSION_LIST = "/home/ahsan/SampleApks/result/Permissions/dangerous_permission_list.csv";
+	public static String ANDROID_ALL_PERMISSION_LIST = "/home/ahsan/SampleApks/result/Permissions/android_permission_list.csv";
 
 	Map<String, String> varifiedAdPackageMapGroup = FileUtil.readVerfiedAdList(Constants.VARIFIED_AD_PACKAGE_LIST);
 	Map<String, Double> updateAdSize = new HashMap<String, Double>();
@@ -57,12 +58,8 @@ public class FeatureExtractorUpdated {
 	public final int THRESHOLD_REVEIEW = 30;
 
 	Map<String, ManifestInformation> manifestList = new HashMap<String, ManifestInformation>();
+	Map<String, Double> appUpdateSizeList = AdsInputDataLoader.extractAppSize(Constants.APP_UPDATE_TABLE_PATH);
 
-	/**
-	 * 
-	 * @param info
-	 * @return
-	 */
 	public Set<String> convertStringToSet(String info) {
 		Set<String> infoList = new HashSet<String>();
 		for (String w : info.split("-")) {
@@ -83,7 +80,7 @@ public class FeatureExtractorUpdated {
 			String receiverList = reader.get("Receiver_List");
 			String serviceList = reader.get("Service_List");
 
-			String key = appName + "-" + versionCode;
+			String key = appName + Constants.COMMA + versionCode;
 
 			ManifestInformation m = new ManifestInformation();
 			m.setActivityList(convertStringToSet(activityList));
@@ -102,7 +99,7 @@ public class FeatureExtractorUpdated {
 			String dangerousPermission = reader2.get("Dangerous_Permission_List");
 			String userPermission = reader2.get("User_Permission_List");
 
-			String key = appName + "-" + versionCode;
+			String key = appName + Constants.COMMA + versionCode;
 
 			manifestList.get(key).setNormalPermissionList(convertStringToSet(normalPermission));
 			manifestList.get(key).setDangerousPermissionList(convertStringToSet(dangerousPermission));
@@ -133,7 +130,8 @@ public class FeatureExtractorUpdated {
 			"MinimumSDK_5", "MinimumSDK_6", "MinimumSDK_7", "MinimumSDK_8", "MinimumSDK_9", "MinimumSDK_10",
 			"MinimumSDK_11", "MinimumSDK_12", "MinimumSDK_13", "MinimumSDK_14", "MinimumSDK_15", "MinimumSDK_16",
 			"MinimumSDK_17", "MinimumSDK_18", "MinimumSDK_19", "MinimumSDK_20", "MinimumSDK_21", "MinimumSDK_22",
-			"MinimumSDK_23", "MinimumSDK_24", "MinimumSDK_25", "MinimumSDK_26", "MinimumSDK_27", "Target" });
+			"MinimumSDK_23", "MinimumSDK_24", "MinimumSDK_25", "MinimumSDK_26", "MinimumSDK_27", "Target",
+			"Neg_ratio" });
 
 	public final int MAX_UPDATE = 10;
 
@@ -160,13 +158,14 @@ public class FeatureExtractorUpdated {
 			while (reader.readRecord()) {
 				String appName = reader.get(0);
 				String versionCode = reader.get(1);
-
+				String updateKey = appName + "-" + versionCode;
 				int totalCol = reader.getColumnCount();
-				Double appSize = Math.ceil(Double.parseDouble(reader.get(2)));
+				Double appSize = appUpdateSizeList.get(updateKey);
 				double adsSize = 0;
 				for (int i = 3; i < totalCol; i++) {
 					adsSize += Math.ceil(Double.parseDouble(reader.get(i)));
 				}
+
 				updateSize.put(appName + Constants.COMMA + versionCode, appSize);
 				updateAdSize.put(appName + Constants.COMMA + versionCode, adsSize);
 				// System.out.println(appName +" " + versionCode +" " + appSize
@@ -230,7 +229,12 @@ public class FeatureExtractorUpdated {
 		double totalReviewBefore = 0.0;
 
 		for (int i = index - 1; i >= 0; i--) {
+
 			String beforeKey = appName + Constants.COMMA + updates.get(i).getVERSION_CODE();
+
+			if (!updateRatingInfo.containsKey(beforeKey)) {
+				continue;
+			}
 			totalReviewBefore += updateRatingInfo.get(beforeKey).getTotalStar();
 			negativeReviewBefore += updateRatingInfo.get(beforeKey).getOneStar()
 					+ updateRatingInfo.get(beforeKey).getTwoStar();
@@ -280,10 +284,6 @@ public class FeatureExtractorUpdated {
 			double beforeRating = updateRatingInfo.get(beforeKey).getAggregatedRating();
 			double updateRating = updateRatingInfo.get(updateKey).getAggregatedRating();
 
-			// features.put(feature_name.get(0), (double)
-			// sdkInfo.get(updateKey).targetSDK);
-			// features.put(feature_name.get(1), (double)
-			// sdkInfo.get(updateKey).minimumSDK);
 			features.put(feature_name.get(0),
 					(double) Math.abs(sdkInfo.get(updateKey).targetSDK) - sdkInfo.get(updateKey).minimumSDK);
 			features.put(feature_name.get(1), (double) updateSize.get(updateKey));
@@ -325,7 +325,8 @@ public class FeatureExtractorUpdated {
 			getChange(updateSize.get(beforeKey), updateSize.get(updateKey), features, 37);
 			getChange(updateAdSize.get(beforeKey), updateAdSize.get(updateKey), features, 40);
 
-			System.out.println(presentUpdate.getRELEASE_DATE() + " " + oldUpdate.getRELEASE_DATE());
+			// System.out.println(presentUpdate.getRELEASE_DATE() + " " +
+			// oldUpdate.getRELEASE_DATE());
 			features.put(feature_name.get(43),
 					(double) Days
 							.daysBetween(DateUtil.formatterWithHyphen.parseDateTime(oldUpdate.getRELEASE_DATE()),
@@ -340,22 +341,27 @@ public class FeatureExtractorUpdated {
 			setSDKVersion(features, 73, sdkInfo.get(updateKey).targetSDK);
 
 			double negativityRatio = getNegativityRatio(updates, index, appName);
+			double afterNegativity = updateRatingInfo.get(updateKey).getNegativeRatingRatio();
 
-			/*
-			 * if(negativityRatio > 1.0 + 0.15){
-			 * features.put(feature_name.get(100), (double) GOOD_UPDATE); }else
-			 * if (negativityRatio < 1.0 - 0.15){
-			 * features.put(feature_name.get(100), (double) BAD_UPDATE); }else{
-			 * features.put(feature_name.get(100), (double) NEUTRAL_UPDATE); }
-			 */
+			
+			if (negativityRatio >= 1.0 + 0.2) {
+				features.put(feature_name.get(100), (double) BAD_UPDATE);
+			} else if (negativityRatio <= 1.0 - 0.2) {
+				features.put(feature_name.get(100), (double) GOOD_UPDATE);
+			} else {
+				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
+			}
+			 
 
-			if ((updateRating - beforeRating) >= threshold_value) {
+			/*if ((updateRating - beforeRating) >= threshold_value) {
 				features.put(feature_name.get(100), (double) GOOD_UPDATE);
 			} else if ((updateRating - beforeRating) <= -threshold_value) {
 				features.put(feature_name.get(100), (double) BAD_UPDATE);
 			} else {
 				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
-			}
+			}*/
+
+			features.put(feature_name.get(101), negativityRatio);
 
 			/*
 			 * if ((updateRating ) > beforeRating) {
@@ -403,18 +409,64 @@ public class FeatureExtractorUpdated {
 		if (!updateRatingInfo.containsKey(beforeKey) || !updateRatingInfo.containsKey(updateKey)) {
 			return false;
 		}
-		double beforeRating = updateRatingInfo.get(beforeKey).getAggregatedRating();
-		double updateRating = updateRatingInfo.get(updateKey).getAggregatedRating();
 
 		if (!sdkInfo.containsKey(beforeKey) || !sdkInfo.containsKey(updateKey)) {
 			return false;
 		}
 
-		if (!manifestFilesList.contains(beforeRating) || !manifestFilesList.contains(updateRating)) {
+		if (!manifestList.containsKey(updateKey) || !manifestList.containsKey(beforeKey)) {
+			return false;
+		}
+
+		if (!updateSize.containsKey(beforeKey) || !updateSize.containsKey(updateKey)) {
+			return false;
+		}
+
+		if (!updateAdSize.containsKey(beforeKey) || !updateAdSize.containsKey(updateKey)) {
 			return false;
 		}
 
 		return true;
+	}
+
+	public boolean checkValidUpdate(String appName, UpdateTable presentUpdate) {
+		String updateKey = appName + Constants.COMMA + presentUpdate.getVERSION_CODE();
+
+		String updateManifestKey = appName + "-" + presentUpdate.getVERSION_CODE();
+
+		if (!updateRatingInfo.containsKey(updateKey)) {
+			System.out.println("Missin: " + appName + " " + presentUpdate.getVERSION_CODE() + " "
+					+ presentUpdate.getRELEASE_DATE());
+			return false;
+		}
+
+		if (!sdkInfo.containsKey(updateKey)) {
+			return false;
+		}
+
+		if (!manifestList.containsKey(updateKey)) {
+			return false;
+		}
+
+		if (!updateSize.containsKey(updateKey)) {
+			return false;
+		}
+
+		if (!updateAdSize.containsKey(updateKey)) {
+			return false;
+		}
+		return true;
+	}
+
+	public int numberOfValidUpdate(String appName, ArrayList<UpdateTable> updates) {
+
+		int validUpdates = 0;
+		for (int i = 0; i < updates.size(); i++) {
+			if (checkValidUpdate(appName, updates.get(i))) {
+				validUpdates++;
+			}
+		}
+		return validUpdates;
 	}
 
 	public void FeatureExtractor() throws Exception {
@@ -424,7 +476,7 @@ public class FeatureExtractorUpdated {
 
 		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data_June/";
 
-		CsvWriter trianingSeqWriter = new CsvWriter(path + "data_updated_100.csv");
+		CsvWriter trianingSeqWriter = new CsvWriter(path + "updated_100.csv");
 
 		trianingSeqWriter.write("AppName");
 		trianingSeqWriter.write("VersionCode");
@@ -452,21 +504,21 @@ public class FeatureExtractorUpdated {
 			ArrayList<Features> appFeature = new ArrayList<Features>();
 			ArrayList<UpdateTable> updates = appUpdates.get(appName);
 
-			System.out.println("App Name [" + appName + "]");
+			// System.out.println("App Name [" + appName + "]");
 
 			int totalUpdate = 0;
 			int validRatingUpdate = 0;
 
-			for (int i = 0; i < updates.size(); i++) {
+			UpdateTable oldUpdate = updates.get(0);
+			for (int i = 1; i < updates.size(); i++) {
 				totalUpdate++;
 				UpdateTable presentUpdate = updates.get(i);
-				UpdateTable oldUpdate = updates.get(i - 1);
 
 				if (!checkValidUpdate(appName, presentUpdate, oldUpdate)) {
-					
+					oldUpdate = presentUpdate;
 					continue;
 				}
-				
+
 				Map<String, Double> featureValue = generateFeatures(appName, presentUpdate, oldUpdate, p, i, updates);
 				if (featureValue == null) {
 					missing_feature_generation_update++;
@@ -483,8 +535,10 @@ public class FeatureExtractorUpdated {
 				validRatingUpdate++;
 				total_analyzed_updates++;
 
+				oldUpdate = presentUpdate;
 			}
-			//writeFeatureDataIII(trianingSeqWriter, appFeature, 100, appName);
+			writeFeatureDataIII(trianingSeqWriter, appFeature, 50, appName);
+
 		}
 
 		trianingSeqWriter.close();
@@ -495,52 +549,53 @@ public class FeatureExtractorUpdated {
 		System.out.println("Total analyzed updates [" + total_analyzed_updates + "]");
 	}
 
-	
-
-	public void writeFeatureDataIII(CsvWriter trainingWriter, ArrayList<Features> appFeatures, int maxSeq, String appName) {
+	public void writeFeatureDataIII(CsvWriter trainingWriter, ArrayList<Features> appFeatures, int maxSeq,
+			String appName) {
 		try {
 			int index = appFeatures.size() - maxSeq;
-			
-			if(index > 0 ){
-				for(int i = index ; i < appFeatures.size(); i ++ ){
+
+			if (index > 0) {
+				for (int i = index; i < appFeatures.size(); i++) {
 					trainingWriter.write(appFeatures.get(i).getAppName());
 					trainingWriter.write(appFeatures.get(i).getVersionCode());
 					for (int j = 0; j < feature_name.size(); j++) {
-						trainingWriter.write(Double.toString(appFeatures.get(i).getFeatureValue().get(feature_name.get(j))));
+						trainingWriter
+								.write(Double.toString(appFeatures.get(i).getFeatureValue().get(feature_name.get(j))));
 					}
 					trainingWriter.endRecord();
 				}
 				return;
 			}
-			
-			if(index < 0 ){
-				for(int i = 0 ; i < appFeatures.size(); i ++ ){
+
+			if (index < 0) {
+				for (int i = 0; i < appFeatures.size(); i++) {
 					trainingWriter.write(appFeatures.get(i).getAppName());
 					trainingWriter.write(appFeatures.get(i).getVersionCode());
 					for (int j = 0; j < feature_name.size(); j++) {
-						trainingWriter.write(Double.toString(appFeatures.get(i).getFeatureValue().get(feature_name.get(j))));
+						trainingWriter
+								.write(Double.toString(appFeatures.get(i).getFeatureValue().get(feature_name.get(j))));
 					}
 					trainingWriter.endRecord();
 				}
-				
-				/*// Add Zero Padding
-				
-				for(int i = 0 ; i < Math.abs(index) ; i ++ ){
+
+				// Add Zero Padding
+
+				for (int i = 0; i < Math.abs(index); i++) {
 					trainingWriter.write(appName);
 					trainingWriter.write("?");
 					for (int j = 0; j < feature_name.size(); j++) {
 						trainingWriter.write("0");
 					}
 					trainingWriter.endRecord();
-				}*/
+				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void init() {
+	public void init() throws Exception {
 		readAnalyzedAppName();
 		SDKInfoLoader sdkInfoLoader = new SDKInfoLoader();
 		sdkInfoLoader.readCSV();
@@ -549,32 +604,36 @@ public class FeatureExtractorUpdated {
 		updateRatingInfo = rat.generateUpdateRating();
 		appUpdates = AdsInputDataLoader.readUpdateData(Constants.APP_UPDATE_TABLE_PATH);
 		appUseAd = AdsInputDataLoader.readAdLibraryInformation();
+		addManifestInfo();
 
 	}
 
-	public void test(){
+	public void test() {
 		int validUpdate = 0;
-		for(String appName : appUpdates.keySet()){
+		int problemUpdate = 0;
+		for (String appName : appUpdates.keySet()) {
 			ArrayList<UpdateTable> updates = appUpdates.get(appName);
 			for (int i = 0; i < updates.size(); i++) {
 				UpdateTable presentUpdate = updates.get(i);
-				UpdateTable oldUpdate = updates.get(i - 1);
-				if (!checkValidUpdate(appName, presentUpdate, oldUpdate)) {					
+				if (!checkValidUpdate(appName, presentUpdate)) {
+					problemUpdate++;
+					System.out.println(
+							appName + " " + updates.get(i).getVERSION_CODE() + " " + updates.get(i).getRELEASE_DATE());
 					continue;
 				}
-				validUpdate ++;
+				validUpdate++;
 			}
 		}
-		
-		System.out.println("Valid update ["+validUpdate+"]");
+		System.out.println("Valid update [" + validUpdate + "]");
+		System.out.println("Problem in update [" + problemUpdate + "]");
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		FeatureExtractorUpdated ob = new FeatureExtractorUpdated();
 		ob.loadSizeInformation();
 		ob.init();
-		ob.test();
-		//ob.FeatureExtractor();
+		// ob.test();
+		ob.FeatureExtractor();
 		// ob.addManifestInfo();
 		System.out.println("Program finishes successfully");
 	}

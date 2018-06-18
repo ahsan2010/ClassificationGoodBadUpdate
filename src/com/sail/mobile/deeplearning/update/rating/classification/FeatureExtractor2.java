@@ -306,14 +306,14 @@ public class FeatureExtractor2 {
 			
 			
 			features.put(feature_name.get(101), negativityRatio);
-			
+			/*
 			if(negativityRatio  > 1.0 + 0.15){
 				features.put(feature_name.get(100), (double) BAD_UPDATE);
 			}else if (negativityRatio  < 1.0 - 0.25	){
 				features.put(feature_name.get(100), (double) GOOD_UPDATE);
 			}else{
 				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
-			}
+			}*/
 			
 			/*
 			if ((updateRating - beforeRating) >= threshold_value) {

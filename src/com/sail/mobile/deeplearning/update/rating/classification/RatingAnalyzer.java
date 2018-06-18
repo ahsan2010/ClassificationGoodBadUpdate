@@ -55,16 +55,16 @@ public class RatingAnalyzer {
 				
 				// Last update
 				if( i == updates.size() - 1){
-					dateBeforeReleasingPresentUpdate = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE()).minusDays(1);
+					dateBeforeReleasingPresentUpdate = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE());
 					DateTime presentUpdateDate = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE()).minusDays(1);				
 					dateBeforeReleasingNextUpdate = Constants.EPERIMENT_END_TIME;
 				}else{
 					UpdateTable nextUpdate = updates.get(i+1);
-					 dateBeforeReleasingPresentUpdate = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE()).minusDays(1);	
+					 dateBeforeReleasingPresentUpdate = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE());	
 					 dateBeforeReleasingNextUpdate = DateUtil.formatterWithHyphen.parseDateTime(nextUpdate.getRELEASE_DATE()).minusDays(1);	
 				}
 				
-				//System.out.println("Update: " + updates.get(i).getRELEASE_DATE()+" " +  updates.get(i+1).getRELEASE_DATE() +" " + updates.get(i).getVERSION_CODE() +" "+updates.get(i+1).getVERSION_CODE()+" "+ updates.size());
+				//System.out.println(dateBeforeReleasingPresentUpdate+" Update: " + updates.get(i).getRELEASE_DATE()+" " +  updates.get(i+1).getRELEASE_DATE() +" " + updates.get(i).getVERSION_CODE() +" "+updates.get(i+1).getVERSION_CODE()+" "+ updates.size());
 				
 				String dateBeforeReleasingPresentUpdateString = dateBeforeReleasingPresentUpdate.toString().substring(0,dateBeforeReleasingPresentUpdate.toString().indexOf("T")).trim();
 				String dateBeforeReleasingNextUpdateString = dateBeforeReleasingNextUpdate.toString().substring(0,dateBeforeReleasingNextUpdate.toString().indexOf("T")).trim();
@@ -90,6 +90,7 @@ public class RatingAnalyzer {
 					continue;
 				}
 				if(ratingBeforeDeployingUpdate == null){
+					System.out.println(appName +" " + update.getVERSION_CODE() +" " + update.getRELEASE_DATE());
 					numberOfCorruptedUPdates++;
 					//System.out.println("Problem deploying before update");
 					continue;
@@ -104,17 +105,18 @@ public class RatingAnalyzer {
 				
 				UpdateRatingInformation updateInformation = null;
 				
-				double oneStar = ratingBeforeDeployingNextUpdate.getOneStar() - ratingBeforeDeployingUpdate.getOneStar();
-				double twoStar = ratingBeforeDeployingNextUpdate.getTwoStar() - ratingBeforeDeployingUpdate.getTwoStar();
-				double threeStar = ratingBeforeDeployingNextUpdate.getThreeStar() - ratingBeforeDeployingUpdate.getThreeStar();
-				double fourStar = ratingBeforeDeployingNextUpdate.getFourStar() - ratingBeforeDeployingUpdate.getFourStar();
-				double fiveStar = ratingBeforeDeployingNextUpdate.getFiveStar() - ratingBeforeDeployingUpdate.getFiveStar();
+				double oneStar = Math.abs(ratingBeforeDeployingNextUpdate.getOneStar() - ratingBeforeDeployingUpdate.getOneStar());
+				double twoStar = Math.abs(ratingBeforeDeployingNextUpdate.getTwoStar() - ratingBeforeDeployingUpdate.getTwoStar());
+				double threeStar = Math.abs(ratingBeforeDeployingNextUpdate.getThreeStar() - ratingBeforeDeployingUpdate.getThreeStar());
+				double fourStar = Math.abs(ratingBeforeDeployingNextUpdate.getFourStar() - ratingBeforeDeployingUpdate.getFourStar());
+				double fiveStar = Math.abs(ratingBeforeDeployingNextUpdate.getFiveStar() - ratingBeforeDeployingUpdate.getFiveStar());
 				double total = oneStar + twoStar + threeStar + fourStar + fiveStar;
 				
 				double rating = (oneStar + (2 * twoStar) + (3 * threeStar) + (4 * fourStar) + (5 * fiveStar)) / total;
 				
-				if (oneStar < 0 || twoStar < 0 || threeStar < 0 || fourStar < 0 || fiveStar < 0 || total == 0)
+				if (oneStar < 0 || twoStar < 0 || threeStar < 0 || fourStar < 0 || fiveStar < 0)
 				{
+					System.out.println(oneStar +" " + twoStar +" " + threeStar +" " + fourStar +" " + fiveStar);
 					numberOfCorruptedUPdates++;
 					continue;
 				}
