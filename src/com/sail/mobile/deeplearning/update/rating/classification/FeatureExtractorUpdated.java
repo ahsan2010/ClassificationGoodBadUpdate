@@ -56,7 +56,7 @@ public class FeatureExtractorUpdated {
 	public final int NEUTRAL_UPDATE = 3;
 
 	public final int THRESHOLD_REVEIEW = 30;
-
+	public double THRESHOLD = 0.2;
 	Map<String, ManifestInformation> manifestList = new HashMap<String, ManifestInformation>();
 	Map<String, Double> appUpdateSizeList = AdsInputDataLoader.extractAppSize(Constants.APP_UPDATE_TABLE_PATH);
 
@@ -109,52 +109,41 @@ public class FeatureExtractorUpdated {
 		System.out.println("Total Manifest File Information [" + manifestList.size() + "]");
 	}
 
-	public List<String> feature_name_old = Arrays.asList(new String[] { "DiffTargetMinSDK", "AppUpdateSize", "AdSize",
-			"NumberOfAds", "NumberOfPermission", "NumberOfDangerousPermission", "NumberOfOtherPermission",
-			"NumberOfActivity", "NumberOfReceiver", "NumberOfService", "TargetSDKChange_Increase",
-			"TargetSDKChange_Decrease", "TargetSDKChange_Nochange", "MiniumSDKChange_Increase",
-			"MiniumSDKChange_Decrease", "MiniumSDKChange_Nochange", "AdsChange_Increase", "AdsChange_Decrease",
-			"AdsChange_Nochange", "ActivityChange_Increase", "ActivityChange_Decrease", "ActivityChange_Nochange",
-			"ReceiverChange_Increase", "ReceiverChange_Decrease", "ReceiverChange_Nochange", "ServiceChange_Increase",
-			"ServiceChange_Decrease", "ServiceChange_Nochange", "PermissionChange_Increase",
-			"PermissionChange_Decrease", "PermissionChange_Nochange", "DangerousPermissionChange_Increase",
-			"DangerousPermissionChange_Decrease", "DangerousPermissionChange_Nochange",
-			"OtherPermissionChange_Increase", "OtherPermissionChange_Decrease", "OtherPermissionChange_Nochange",
-			"AppSizeChange_Increase", "AppSizeChange_Decrease", "AppSizeChange_Nochange", "AdsSizeChange_Increase",
-			"AdsSizeChange_Decrease", "AdsSizeChange_Nochange", "Duration_Release", "Prev_Rating", "Prev_Neg_Rating",
-			"TargetSDK_1", "TargetSDK_2", "TargetSDK_3", "TargetSDK_4", "TargetSDK_5", "TargetSDK_6", "TargetSDK_7",
-			"TargetSDK_8", "TargetSDK_9", "TargetSDK_10", "TargetSDK_11", "TargetSDK_12", "TargetSDK_13",
-			"TargetSDK_14", "TargetSDK_15", "TargetSDK_16", "TargetSDK_17", "TargetSDK_18", "TargetSDK_19",
-			"TargetSDK_20", "TargetSDK_21", "TargetSDK_22", "TargetSDK_23", "TargetSDK_24", "TargetSDK_25",
-			"TargetSDK_26", "TargetSDK_27", "MinimumSDK_1", "MinimumSDK_2", "MinimumSDK_3", "MinimumSDK_4",
-			"MinimumSDK_5", "MinimumSDK_6", "MinimumSDK_7", "MinimumSDK_8", "MinimumSDK_9", "MinimumSDK_10",
-			"MinimumSDK_11", "MinimumSDK_12", "MinimumSDK_13", "MinimumSDK_14", "MinimumSDK_15", "MinimumSDK_16",
-			"MinimumSDK_17", "MinimumSDK_18", "MinimumSDK_19", "MinimumSDK_20", "MinimumSDK_21", "MinimumSDK_22",
-			"MinimumSDK_23", "MinimumSDK_24", "MinimumSDK_25", "MinimumSDK_26", "MinimumSDK_27", "Target",
-			"Neg_ratio" });
 	
-	public List<String> feature_name = Arrays.asList(new String[] { "DiffTargetMinSDK", "AppUpdateSize", "AdSize",
-			"NumberOfAds", "NumberOfPermission", "NumberOfDangerousPermission", "NumberOfOtherPermission",
-			"NumberOfActivity", "NumberOfReceiver", "NumberOfService", "TargetSDKChange_Increase",
-			"TargetSDKChange_Decrease", "TargetSDKChange_Nochange", "MiniumSDKChange_Increase",
-			"MiniumSDKChange_Decrease", "MiniumSDKChange_Nochange", "AdsChange_Increase", "AdsChange_Decrease",
-			"AdsChange_Nochange", "ActivityChange_Increase", "ActivityChange_Decrease", "ActivityChange_Nochange",
-			"ReceiverChange_Increase", "ReceiverChange_Decrease", "ReceiverChange_Nochange", "ServiceChange_Increase",
-			"ServiceChange_Decrease", "ServiceChange_Nochange", "PermissionChange_Increase",
-			"PermissionChange_Decrease", "PermissionChange_Nochange", "DangerousPermissionChange_Increase",
-			"DangerousPermissionChange_Decrease", "DangerousPermissionChange_Nochange",
-			"OtherPermissionChange_Increase", "OtherPermissionChange_Decrease", "OtherPermissionChange_Nochange",
-			"AppSizeChange_Increase", "AppSizeChange_Decrease", "AppSizeChange_Nochange", "AdsSizeChange_Increase",
-			"AdsSizeChange_Decrease", "AdsSizeChange_Nochange", "Duration_Release", "Prev_Rating", "Prev_Neg_Rating",
-			"TargetSDK_1", "TargetSDK_2", "TargetSDK_3", "TargetSDK_4", "TargetSDK_5", "TargetSDK_6", "TargetSDK_7",
-			"TargetSDK_8", "TargetSDK_9", "TargetSDK_10", "TargetSDK_11", "TargetSDK_12", "TargetSDK_13",
-			"TargetSDK_14", "TargetSDK_15", "TargetSDK_16", "TargetSDK_17", "TargetSDK_18", "TargetSDK_19",
-			"TargetSDK_20", "TargetSDK_21", "TargetSDK_22", "TargetSDK_23", "TargetSDK_24", "TargetSDK_25",
-			"TargetSDK_26", "TargetSDK_27", "MinimumSDK_1", "MinimumSDK_2", "MinimumSDK_3", "MinimumSDK_4",
-			"MinimumSDK_5", "MinimumSDK_6", "MinimumSDK_7", "MinimumSDK_8", "MinimumSDK_9", "MinimumSDK_10",
-			"MinimumSDK_11", "MinimumSDK_12", "MinimumSDK_13", "MinimumSDK_14", "MinimumSDK_15", "MinimumSDK_16",
-			"MinimumSDK_17", "MinimumSDK_18", "MinimumSDK_19", "MinimumSDK_20", "MinimumSDK_21", "MinimumSDK_22",
-			"MinimumSDK_23", "MinimumSDK_24", "MinimumSDK_25", "MinimumSDK_26", "MinimumSDK_27", "Target",
+	public List<String> feature_name = Arrays.asList(new String[] { 
+			"DiffTargetMinSDK", "AppUpdateSize", "AdSize",
+			"NumberOfAds", "NumberOfPermission", "NumberOfDangerousPermission",
+			"NumberOfActivity", "NumberOfReceiver", "NumberOfService", 
+			"TargetSDKChange", 
+			"MiniumSDKChange", 
+			"AdsChange", 
+			"ActivityChange",
+			"ReceiverChange", 
+			"ServiceChange", 
+			"PermissionChange", 
+			"DangerousPermissionChange",
+			"AppSizeChange", 
+			"AdsSizeChange", 
+			"Duration_Release", "Prev_Neg_Rating_Ratio",
+			"Target",
+			"Neg_ratio","Neg_Rating_Ratio" });
+	
+	public List<String> feature_name_original = Arrays.asList(new String[] { 
+			"DiffTargetMinSDK", "AppUpdateSize", "AdSize",
+			"NumberOfAds", "NumberOfPermission", "NumberOfDangerousPermission",
+			"NumberOfActivity", "NumberOfReceiver", "NumberOfService", 
+			"TargetSDKChange", 
+			"MiniumSDKChange", 
+			"AdsChange", 
+			"ActivityChange",
+			"ReceiverChange", 
+			"ServiceChange", 
+			"PermissionChange", 
+			"DangerousPermissionChange",
+			"AppSizeChange", 
+			"AdsSizeChange", 
+			"Duration_Release", "Prev_Rating", "Prev_Neg_Rating",
+			"Target",
 			"Neg_ratio" });
 
 	public final int MAX_UPDATE = 10;
@@ -184,12 +173,12 @@ public class FeatureExtractorUpdated {
 				String versionCode = reader.get(1);
 				String updateKey = appName + "-" + versionCode;
 				int totalCol = reader.getColumnCount();
-				Double appSize = appUpdateSizeList.get(updateKey);
+				Double appSize = Double.parseDouble(reader.get("Total_Size"));
 				double adsSize = 0;
 				for (int i = 3; i < totalCol; i++) {
 					adsSize += Math.ceil(Double.parseDouble(reader.get(i)));
 				}
-
+				
 				updateSize.put(appName + Constants.COMMA + versionCode, appSize);
 				updateAdSize.put(appName + Constants.COMMA + versionCode, adsSize);
 				// System.out.println(appName +" " + versionCode +" " + appSize
@@ -203,34 +192,29 @@ public class FeatureExtractorUpdated {
 
 	int getChange(int oldTarget, int presentTarget, Map<String, Double> features, int index) {
 		features.put(feature_name.get(index), 0.0);
-		features.put(feature_name.get(index + 1), 0.0);
-		features.put(feature_name.get(index + 2), 0.0);
-
 		if (presentTarget > oldTarget) {
 			features.put(feature_name.get(index), 1.0);
-			return 2;
+			return 1;
 		} else if (presentTarget < oldTarget) {
-			features.put(feature_name.get(index + 1), 1.0);
-			return 3;
+			features.put(feature_name.get(index), -1.0);
+			return -1;
 		}
-		features.put(feature_name.get(index + 2), 1.0);
-		return 1;
+		features.put(feature_name.get(index), 0.0);
+		return 0;
 	}
 
 	int getChange(double oldTarget, double presentTarget, Map<String, Double> features, int index) {
 		features.put(feature_name.get(index), 0.0);
-		features.put(feature_name.get(index + 1), 0.0);
-		features.put(feature_name.get(index + 2), 0.0);
 
 		if (presentTarget > oldTarget) {
 			features.put(feature_name.get(index), 1.0);
-			return 2;
+			return 1;
 		} else if (presentTarget < oldTarget) {
-			features.put(feature_name.get(index + 1), 1.0);
-			return 3;
+			features.put(feature_name.get(index + 1), -1.0);
+			return -1;
 		}
-		features.put(feature_name.get(index + 2), 1.0);
-		return 1;
+		features.put(feature_name.get(index + 2), 0.0);
+		return 0;
 	}
 
 	public void setSDKVersion(Map<String, Double> features, int index, int sdkVersion) {
@@ -320,13 +304,13 @@ public class FeatureExtractorUpdated {
 
 			features.put(feature_name.get(4), (double) manifestInfoPresent.get("PERMISSION"));
 			features.put(feature_name.get(5), (double) manifestInfoPresent.get("DANGEROUS_PERMISSION"));
-			features.put(feature_name.get(6), (double) manifestInfoPresent.get("OTHER_PERMISSION"));
-			features.put(feature_name.get(7), (double) manifestInfoPresent.get("ACTIVITY"));
-			features.put(feature_name.get(8), (double) manifestInfoPresent.get("RECEIVER"));
-			features.put(feature_name.get(9), (double) manifestInfoPresent.get("SERVICE"));
+			
+			features.put(feature_name.get(6), (double) manifestInfoPresent.get("ACTIVITY"));
+			features.put(feature_name.get(7), (double) manifestInfoPresent.get("RECEIVER"));
+			features.put(feature_name.get(8), (double) manifestInfoPresent.get("SERVICE"));
 
-			getChange(sdkInfo.get(beforeKey).targetSDK, sdkInfo.get(updateKey).targetSDK, features, 10);
-			getChange(sdkInfo.get(beforeKey).minimumSDK, sdkInfo.get(updateKey).minimumSDK, features, 13);
+			getChange(sdkInfo.get(beforeKey).targetSDK, sdkInfo.get(updateKey).targetSDK, features, 9);
+			getChange(sdkInfo.get(beforeKey).minimumSDK, sdkInfo.get(updateKey).minimumSDK, features, 10);
 
 			int presentAd = 0;
 			int oldAd = 0;
@@ -337,86 +321,53 @@ public class FeatureExtractorUpdated {
 				oldAd = appUseAd.get(beforeKey).getAdsNames().size();
 			}
 
-			getChange(oldAd, presentAd, features, 16);
-			getChange(manifestInfoPresent.get("ACTIVITY"), manifestInfoOld.get("ACTIVITY"), features, 19);
-			getChange(manifestInfoPresent.get("RECEIVER"), manifestInfoOld.get("RECEIVER"), features, 22);
-			getChange(manifestInfoPresent.get("SERVICE"), manifestInfoOld.get("SERVICE"), features, 25);
-			getChange(manifestInfoPresent.get("PERMISSION"), manifestInfoOld.get("PERMISSION"), features, 28);
+			getChange(oldAd, presentAd, features, 11);
+			getChange(manifestInfoPresent.get("ACTIVITY"), manifestInfoOld.get("ACTIVITY"), features, 12);
+			getChange(manifestInfoPresent.get("RECEIVER"), manifestInfoOld.get("RECEIVER"), features, 13);
+			getChange(manifestInfoPresent.get("SERVICE"), manifestInfoOld.get("SERVICE"), features, 14);
+			getChange(manifestInfoPresent.get("PERMISSION"), manifestInfoOld.get("PERMISSION"), features, 15);
 			getChange(manifestInfoPresent.get("DANGEROUS_PERMISSION"), manifestInfoOld.get("DANGEROUS_PERMISSION"),
-					features, 31);
-			getChange(manifestInfoPresent.get("OTHER_PERMISSION"), manifestInfoOld.get("OTHER_PERMISSION"), features,
-					34);
-			getChange(updateSize.get(beforeKey), updateSize.get(updateKey), features, 37);
-			getChange(updateAdSize.get(beforeKey), updateAdSize.get(updateKey), features, 40);
+					features, 16);
 
-			// System.out.println(presentUpdate.getRELEASE_DATE() + " " +
-			// oldUpdate.getRELEASE_DATE());
-			features.put(feature_name.get(43),
+			getChange(updateSize.get(beforeKey), updateSize.get(updateKey), features, 17);
+			getChange(updateAdSize.get(beforeKey), updateAdSize.get(updateKey), features, 18);
+
+			features.put(feature_name.get(19),
 					(double) Days
 							.daysBetween(DateUtil.formatterWithHyphen.parseDateTime(oldUpdate.getRELEASE_DATE()),
 									DateUtil.formatterWithHyphen.parseDateTime(presentUpdate.getRELEASE_DATE()))
 							.getDays());
-			// setSDKVersion(features,43,sdkInfo.get(updateKey).targetSDK);
-			// setSDKVersion(features,70,sdkInfo.get(updateKey).minimumSDK);
-
-			features.put(feature_name.get(44), beforeRating);
-			features.put(feature_name.get(45), updateRatingInfo.get(beforeKey).getNegativeRatingRatio());
-			setSDKVersion(features, 46, sdkInfo.get(updateKey).targetSDK);
-			setSDKVersion(features, 73, sdkInfo.get(updateKey).targetSDK);
+		
+			//features.put(feature_name.get(20), beforeRating);
+			features.put(feature_name.get(20), updateRatingInfo.get(beforeKey).getNegativeRatingRatio());
+			
+			/*setSDKVersion(features, 46, sdkInfo.get(updateKey).targetSDK);
+			setSDKVersion(features, 73, sdkInfo.get(updateKey).targetSDK);*/
 
 			double negativityRatio = getNegativityRatio(updates, index, appName);
 			double afterNegativity = updateRatingInfo.get(updateKey).getNegativeRatingRatio();
 
 			
-			if (negativityRatio >= 1.0 + 0.2) {
-				features.put(feature_name.get(100), (double) BAD_UPDATE);
-			} else if (negativityRatio <= 1.0 - 0.2) {
-				features.put(feature_name.get(100), (double) GOOD_UPDATE);
-			} else {
-				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
+			if (negativityRatio >= 1.0 + THRESHOLD) {
+				features.put(feature_name.get(21), (double) BAD_UPDATE);
+			} 
+			else if (negativityRatio <= 1.0 - THRESHOLD) {
+				features.put(feature_name.get(21), (double) GOOD_UPDATE);
 			}
-			 
-
-			/*if ((updateRating - beforeRating) >= threshold_value) {
-				features.put(feature_name.get(100), (double) GOOD_UPDATE);
-			} else if ((updateRating - beforeRating) <= -threshold_value) {
-				features.put(feature_name.get(100), (double) BAD_UPDATE);
-			} else {
-				features.put(feature_name.get(100), (double) NEUTRAL_UPDATE);
+			else {
+				features.put(feature_name.get(21), (double) NEUTRAL_UPDATE);
+			}
+			
+			/*if(afterNegativity > 15){
+				features.put(feature_name.get(22), (double) BAD_UPDATE);
+			}else if (afterNegativity < 5){
+				features.put(feature_name.get(22), (double) GOOD_UPDATE);
+			}else{
+				features.put(feature_name.get(22), (double) NEUTRAL_UPDATE);
 			}*/
-
-			features.put(feature_name.get(101), negativityRatio);
-
-			/*
-			 * if ((updateRating ) > beforeRating) {
-			 * features.put(feature_name.get(46), (double) GOOD_UPDATE); } else
-			 * { features.put(feature_name.get(46), (double) BAD_UPDATE); }
-			 */
-
-			/*
-			 * writerDiff.write(appName);
-			 * writerDiff.write(presentUpdate.getVERSION_CODE());
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).
-			 * getAggregatedRating()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).
-			 * getOneStar() + updateRatingInfo.get(beforeKey).getTwoStar()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).
-			 * getFourStar() + updateRatingInfo.get(beforeKey).getFiveStar()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).
-			 * getThreeStar()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(beforeKey).
-			 * getTotalStar()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).
-			 * getAggregatedRating()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).
-			 * getOneStar() + updateRatingInfo.get(updateKey).getTwoStar()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).
-			 * getFourStar() + updateRatingInfo.get(updateKey).getFiveStar()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).
-			 * getThreeStar()));
-			 * writerDiff.write(Double.toString(updateRatingInfo.get(updateKey).
-			 * getTotalStar())); writerDiff.endRecord();
-			 */
+			
+			features.put(feature_name.get(22), negativityRatio);
+			features.put(feature_name.get(23), afterNegativity);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -498,9 +449,9 @@ public class FeatureExtractorUpdated {
 		int missing_feature_generation_update = 0;
 		Parser p = new Parser();
 
-		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data_June/";
+		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data_June/update_feature/";
 
-		CsvWriter trianingSeqWriter = new CsvWriter(path + "updated_100.csv");
+		CsvWriter trianingSeqWriter = new CsvWriter(path + "updated_100_"+THRESHOLD+".csv");
 
 		trianingSeqWriter.write("AppName");
 		trianingSeqWriter.write("VersionCode");
@@ -515,9 +466,7 @@ public class FeatureExtractorUpdated {
 				.readAndroidPermission(ANDROID_DANGEROUS_PERMISSION_LIST);// android.permissions.WRITE
 		Set<String> androidPermissions = AdsInputDataLoader.readAndroidPermission(ANDROID_ALL_PERMISSION_LIST); // android.permissions.WRITE
 		Set<String> manifestFileList = AdsInputDataLoader.loadManifestFileList();
-		// "AndroidManifest-"+appName+"-"+ versionCode +"-" +
-		// releaseDaet.replace("-", "_")+".xml";
-
+		
 		int missingUpdate = 0;
 		int total_analyzed_updates = 0;
 		int missingUpdateManifest = 0;
@@ -602,7 +551,7 @@ public class FeatureExtractorUpdated {
 					trainingWriter.endRecord();
 				}
 
-				// Add Zero Padding
+				/*// Add Zero Padding
 
 				for (int i = 0; i < Math.abs(index); i++) {
 					trainingWriter.write(appName);
@@ -611,7 +560,7 @@ public class FeatureExtractorUpdated {
 						trainingWriter.write("0");
 					}
 					trainingWriter.endRecord();
-				}
+				}*/
 			}
 
 		} catch (Exception e) {
