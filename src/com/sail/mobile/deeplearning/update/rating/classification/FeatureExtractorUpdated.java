@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.joda.time.DateTime;
 import org.joda.time.Days;
 
 import com.csvreader.CsvReader;
@@ -19,7 +18,6 @@ import com.sail.mobile.deeplearning.update.rating.classification.Loader.AdsInput
 import com.sail.mobile.deeplearning.update.rating.classification.Loader.SDKInfoLoader;
 import com.sail.mobile.deeplearning.update.rating.classification.common.Constants;
 import com.sail.mobile.deeplearning.update.rating.classification.model.AdInformation;
-import com.sail.mobile.deeplearning.update.rating.classification.model.AppTable;
 import com.sail.mobile.deeplearning.update.rating.classification.model.SDKCsvInfo;
 import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateRatingInformation;
 import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateTable;
@@ -43,11 +41,19 @@ public class FeatureExtractorUpdated {
 	public static String ANDROID_DANGEROUS_PERMISSION_LIST = "/home/ahsan/SampleApks/result/Permissions/dangerous_permission_list.csv";
 	public static String ANDROID_ALL_PERMISSION_LIST = "/home/ahsan/SampleApks/result/Permissions/android_permission_list.csv";
 
+	public String UIFeatureFile = "";
+	public String CodeChurnFeatureFile = "";
+	
 	Map<String, String> varifiedAdPackageMapGroup = FileUtil.readVerfiedAdList(Constants.VARIFIED_AD_PACKAGE_LIST);
-	Map<String, Double> updateAdSize = new HashMap<String, Double>();
-	Map<String, Double> updateSize = new HashMap<String, Double>();
-	ArrayList<String> analyzedAppName = new ArrayList<String>();
+	Map<String, Double> updateAdSize = new HashMap<String, Double> ();
+	Map<String, Double> updateSize = new HashMap<String, Double> ();
+	Set<String> analyzedAppName = new HashSet<String> ();
 
+	Map<String,Double> layoutChangeList = new HashMap<String,Double> ();
+	Map<String,Double> colorAddedList = new HashMap<String,Double> ();
+	Map<String,Integer> classesOfUpdateList = new HashMap<String,Integer> ();
+	Map<String,Integer> methodsOfUpdateList = new HashMap<String,Integer> ();
+	
 	double threshold_value = 0.1;
 
 	public final int ZERO_PADDING = 0;
@@ -60,6 +66,32 @@ public class FeatureExtractorUpdated {
 	Map<String, ManifestInformation> manifestList = new HashMap<String, ManifestInformation>();
 	Map<String, Double> appUpdateSizeList = AdsInputDataLoader.extractAppSize(Constants.APP_UPDATE_TABLE_PATH);
 
+	public void readCodeChurnFeature() throws Exception {
+		CsvReader reader = new CsvReader("");
+		reader.readHeaders();
+		while(reader.readRecord()){
+			
+		}
+	}
+	
+	public void readUiFeatures() throws Exception{
+		CsvReader reader = new CsvReader("");
+		reader.readHeaders();
+		while(reader.readRecord()){
+			String appName = reader.get("Package_Name");
+			String presVersion = reader.get("Pres_Version_Code");
+			String oldVersion = reader.get("Prev_Version_Code");
+			int layoutCommon = Integer.parseInt(reader.get("Layout_Common"));
+			int layoutChange = Integer.parseInt(reader.get("Layout_Changed"));
+			double perLayoutChange = layoutChange / (double)layoutChange ;
+			int colorAdded = Integer.parseInt(reader.get("Color_Added"));
+			
+			String presKey = appName + "-" + presVersion;
+			layoutChangeList.put(presKey, perLayoutChange);
+			colorAddedList.put(presKey, (double)colorAdded);
+		}
+	}
+	
 	public Set<String> convertStringToSet(String info) {
 		Set<String> infoList = new HashSet<String>();
 		for (String w : info.split("-")) {
@@ -69,6 +101,8 @@ public class FeatureExtractorUpdated {
 		return infoList;
 	}
 
+	
+	
 	public void addManifestInfo() throws Exception {
 		CsvReader reader = new CsvReader("/home/ahsan/SampleApks/result/ManifestExtraction/manifest_info.csv");
 		reader.readHeaders();
@@ -152,21 +186,22 @@ public class FeatureExtractorUpdated {
 		try {
 
 			CsvReader reader = new CsvReader(
-					"/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/updates_per_app.csv");
+					"/home/ahsan/SampleApks/scripts/studied_app_updates_final_2016.csv");
 			reader.readHeaders();
 			while (reader.readRecord()) {
-				analyzedAppName.add(reader.get("APP_NAME"));
-				System.out.println(reader.get("APP_NAME"));
+				analyzedAppName.add(reader.get("PACKAGE_NAME"));
+				//System.out.println(reader.get("APP_NAME"));
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("Selected total apps ["+analyzedAppName.size()+"]");
 	}
 
 	public void loadSizeInformation() {
 		try {
-			CsvReader reader = new CsvReader(Constants.APP_SIZE_INFO);
+			CsvReader reader = new CsvReader(Constants.APP_SIZE_INFO_II);
 			reader.readHeaders();
 			while (reader.readRecord()) {
 				String appName = reader.get(0);
@@ -174,10 +209,10 @@ public class FeatureExtractorUpdated {
 				String updateKey = appName + "-" + versionCode;
 				int totalCol = reader.getColumnCount();
 				Double appSize = Double.parseDouble(reader.get("Total_Size"));
-				double adsSize = 0;
-				for (int i = 3; i < totalCol; i++) {
+				double adsSize = Double.parseDouble(reader.get("Total_Ads_Size"));
+				/*for (int i = 3; i < totalCol; i++) {
 					adsSize += Math.ceil(Double.parseDouble(reader.get(i)));
-				}
+				}*/
 				
 				updateSize.put(appName + Constants.COMMA + versionCode, appSize);
 				updateAdSize.put(appName + Constants.COMMA + versionCode, adsSize);
@@ -188,6 +223,10 @@ public class FeatureExtractorUpdated {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println("[SIZE INFORMATION]");
+		System.out.println("Total updates for app size calculation ["+updateSize.size()+"]");
+		System.out.println("Total updates for ads size calculation ["+updateAdSize.size()+"]");
 	}
 
 	int getChange(int oldTarget, int presentTarget, Map<String, Double> features, int index) {
@@ -283,11 +322,6 @@ public class FeatureExtractorUpdated {
 
 			Map<String, Integer> manifestInfoOld = getManifestInfo(beforeKey);
 			Map<String, Integer> manifestInfoPresent = getManifestInfo(updateKey);
-
-			if ((updateRatingInfo.get(beforeKey).getTotalStar() < THRESHOLD_REVEIEW)
-					|| (updateRatingInfo.get(updateKey).getTotalStar() < THRESHOLD_REVEIEW)) {
-				return null;
-			}
 
 			double beforeRating = updateRatingInfo.get(beforeKey).getAggregatedRating();
 			double updateRating = updateRatingInfo.get(updateKey).getAggregatedRating();
@@ -409,12 +443,15 @@ public class FeatureExtractorUpdated {
 
 		String updateManifestKey = appName + "-" + presentUpdate.getVERSION_CODE();
 
+		
 		if (!updateRatingInfo.containsKey(updateKey)) {
-			System.out.println("Missin: " + appName + " " + presentUpdate.getVERSION_CODE() + " "
-					+ presentUpdate.getRELEASE_DATE());
 			return false;
 		}
 
+		if(updateRatingInfo.get(updateKey).getTotalStar() < THRESHOLD_REVEIEW){
+			return false;
+		}
+		
 		if (!sdkInfo.containsKey(updateKey)) {
 			return false;
 		}
@@ -449,7 +486,7 @@ public class FeatureExtractorUpdated {
 		int missing_feature_generation_update = 0;
 		Parser p = new Parser();
 
-		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data_June/update_feature/";
+		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Date_August/update_feature/";
 
 		CsvWriter trianingSeqWriter = new CsvWriter(path + "updated_100_"+THRESHOLD+".csv");
 
@@ -471,27 +508,29 @@ public class FeatureExtractorUpdated {
 		int total_analyzed_updates = 0;
 		int missingUpdateManifest = 0;
 		int missingSDKInfo = 0;
+		int invalidRatingUpdate = 0;
+
 
 		for (String appName : analyzedAppName) {
 
 			ArrayList<Features> appFeature = new ArrayList<Features>();
 			ArrayList<UpdateTable> updates = appUpdates.get(appName);
 
-			// System.out.println("App Name [" + appName + "]");
+			//System.out.println("App Name [" + appName + "]");
 
 			int totalUpdate = 0;
-			int validRatingUpdate = 0;
-
+			
 			UpdateTable oldUpdate = updates.get(0);
 			for (int i = 1; i < updates.size(); i++) {
 				totalUpdate++;
 				UpdateTable presentUpdate = updates.get(i);
 
-				if (!checkValidUpdate(appName, presentUpdate, oldUpdate)) {
+				if (!(checkValidUpdate(appName, presentUpdate) && checkValidUpdate(appName, oldUpdate))) {
 					oldUpdate = presentUpdate;
+					invalidRatingUpdate ++;
 					continue;
 				}
-
+				
 				Map<String, Double> featureValue = generateFeatures(appName, presentUpdate, oldUpdate, p, i, updates);
 				if (featureValue == null) {
 					missing_feature_generation_update++;
@@ -504,20 +543,18 @@ public class FeatureExtractorUpdated {
 				feature.setFeatureValue(featureValue);
 
 				appFeature.add(feature);
-
-				validRatingUpdate++;
 				total_analyzed_updates++;
 
 				oldUpdate = presentUpdate;
 			}
-			writeFeatureDataIII(trianingSeqWriter, appFeature, 50, appName);
+			//writeFeatureDataIII(trianingSeqWriter, appFeature, 50, appName);
 
 		}
 
 		trianingSeqWriter.close();
 
 		System.out.println("------------------------------------------------------");
-
+		System.out.println("Invalid update ["+invalidRatingUpdate+"]");
 		System.out.println("Problem feature genreation [" + missing_feature_generation_update + "] updates");
 		System.out.println("Total analyzed updates [" + total_analyzed_updates + "]");
 	}
@@ -605,7 +642,7 @@ public class FeatureExtractorUpdated {
 		FeatureExtractorUpdated ob = new FeatureExtractorUpdated();
 		ob.loadSizeInformation();
 		ob.init();
-		// ob.test();
+		//ob.test();
 		ob.FeatureExtractor();
 		// ob.addManifestInfo();
 		System.out.println("Program finishes successfully");

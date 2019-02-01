@@ -20,7 +20,11 @@ public class Constants {
 	public static DateTime EPERIMENT_START_TIME = DateUtil.formatter.parseDateTime("2016_04_20");
 	public static DateTime EPERIMENT_END_TIME = DateUtil.formatter.parseDateTime("2017_09_20");
 
-	public static String ROOT = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/";
+	//public static String ROOT = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT";
+	///home/local/SAIL/ahsan/Documents/Update_Classification/
+	//public static String ROOT = "/home/ahasan/Documents/ROOT";
+	public static String ROOT = "/home/local/SAIL/ahsan/Documents/Update_Classification/ROOT";
+	
 
 	public static final String VARIFIED_AD_PACKAGE_LIST = ROOT+"/scripts/verified_ads.csv";
 	public static String csvSdkVersionInfoPath = ROOT +"/scripts/SDK_Versions_Report.csv";
@@ -35,6 +39,35 @@ public class Constants {
 	public static final String ANDROID_ALL_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/android_permission_list.csv";
 	public static final String APPS_LIBRARY_SIZE_PER_UPDATES = ROOT + "/scripts/app_ads_library_size.csv";
 	public static final String APP_SIZE_INFO = ROOT + "/scripts/size_thread.csv";
+	public static final String APP_SIZE_INFO_II = ROOT + "/scripts/App_Ad_Size.csv";
 	
+	
+	//Safwat
+	public static final long DEFAULT_LIFE_TIME = -9999999999L;
+	public static final double DEFAULT_REPONSE_TIME = -9999999999L;
+	public static final String COMMA_SEPARATOR = ",";
+	public static final String TAB_SEPARATOR = "\t";
+	public static final String SQL_DATE_FORMAT = "MMM d, yyyy";
+	public static final String RESULTS_DATE_FORMAT = "yyyy.MM.dd";
+	public static final String RESULT_OUTPUT_LOCATION = "/Users/shassan/Desktop/Safwat/PhD_Work/MSR/Project/Mobile/Results/";
+	public static final String INPUT_LOCATION = "/Users/shassan/Desktop/Safwat/PhD_Work/MSR/Project/Mobile/Data/";
+	public static final String REPOSATORY_INPUT_LOCATION = "/Users/shassan/Documents/PhDWorkspace/MSR_Project_Documentation/Results/";
+	
+	public static final String DATA_SNAPSHOT_DATE = "2014.11.18";
+	public static final String PREPROCESSING_LOCATION = "/Users/shassan/Documents/PhDWorkspace/MSR_Project_Documentation/Results/Preprocessing/";
+	
+	public static final String MEDICAL_CATEGORY = "MEDICAL";
+	public static final String DASH_SEPARATOR = "-";
+	public static final String DUMMY_VERSION = "Dummy_Version_String";
+	
+	public static final String OR_CONDITION = "|";
+	public static final String AND_CONDITION = "&";
+	public static final String SPACE_SEPARATOR = " ";
+	public static final String UNDERSCORE_SEPARATOR = "_";
+
+	/** This format will result date in this shape "2010-05-30 22:15:52"	*/
+	public static final String FULL_TIME_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+	public static final String SHORT_DATE_FORMAT = "yyyy-MM-dd";
 	
 }

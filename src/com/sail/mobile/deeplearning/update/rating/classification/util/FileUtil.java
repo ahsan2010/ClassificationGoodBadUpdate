@@ -62,6 +62,43 @@ public class FileUtil
 		return filesList;
 
 	}
+	
+	public static Set<String> listFilesIII(String dirName, String fileExtention, String key, String appName, String updateNo)
+	{
+		
+		
+		Set<String> filesList = new HashSet<String>();
+		try
+		{
+			File directory = new File(dirName);
+
+			File[] fList = directory.listFiles();
+
+			//System.out.println(dirName);
+			
+			for (File file : fList)
+			{
+				
+					if (isFileEndsWithCertainExtention(file, fileExtention))
+					{
+						String path = file.getAbsolutePath();
+						int index = path.lastIndexOf(key);
+						path = path.substring(path.lastIndexOf(key));
+						//System.out.println(index + " " + path +"   " + key);
+						filesList.add(file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(key) + key.length()));
+					}
+
+				
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println("Missing ["+appName+"] ["+updateNo+"]");
+		}
+
+		return filesList;
+
+	}
 
 	
 	
@@ -299,7 +336,11 @@ public class FileUtil
 		//errorJarList.add("com.trustgo.mobile.security-471-2016_10_26");
 		//System.out.println(futil.checkErrorJar("/home/com.roamingsquirrel.android.calculator-226-2016_06_29-dex2jar.jar", errorJarList));
 		//readAllAvailableJarNames("/home/ahsan/Documents/SAILLabResearch/Ad Library Analysis/Results/listOfjars.txt");
-		listFiles("/home/ahsan/SampleApks/com","class");
+		//listFiles("/home/ahsan/SampleApks/com","class");
+		//Set<String> files = listFilesIII("/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/Ui_Feature_Generation/air.ECBTrumpAndroid-1000008-2016_06_17/res/layout", "xml", "res/layout/");
+		/*for(String f : files){
+			System.out.println(f);
+		}*/
 	}
 
 	public static String readRecordCell(String line, int index)

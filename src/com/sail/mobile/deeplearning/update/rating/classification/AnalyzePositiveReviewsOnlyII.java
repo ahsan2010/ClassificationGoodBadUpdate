@@ -16,15 +16,15 @@ import com.sail.awsomebasupdates.model.AppInfo;
 import com.sail.awsomebasupdates.model.DailyReviewsStatus;
 import com.sail.awsomebasupdates.model.InvestigationPositivity;
 import com.sail.awsomebasupdates.model.UpdatePositiveSignalInfo;
-import com.sail.mobile.analyzer.googleplay.commmon.Constants;
 import com.sail.mobile.analyzer.googleplay.commmon.DateUtil;
 import com.sail.mobile.analyzer.googleplay.commmon.TextUtil;
+import com.sail.mobile.deeplearning.update.rating.classification.common.Constants;
 import com.sail.mobile.deeplearning.update.rating.classification.model.AppTable;
 
 public class AnalyzePositiveReviewsOnlyII
 {
 
-	public static final String WORKING_DIRECTORY = "/home/ahsan/Documents/SAILLabResearch/SDK_Version_Analysis/Update_Rating_Code_Safwat/";
+	public static final String WORKING_DIRECTORY = Constants.ROOT + "/Update_Rating_Code_Safwat/";
 	public static final String ALL_UPDATES_FILE = WORKING_DIRECTORY+"update_2016_app_daily_rating.csv";
 	public static final String APP_DAILY_RATING_FILE = WORKING_DIRECTORY+"Apps_Daily_Rating.csv";
 	public static final String UPDATE_POSITIVITY_FILE = WORKING_DIRECTORY+"Updates_Positivity.csv";
