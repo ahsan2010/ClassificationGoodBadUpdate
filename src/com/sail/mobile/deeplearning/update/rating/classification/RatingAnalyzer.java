@@ -29,7 +29,6 @@ public class RatingAnalyzer {
 	
 	public Map<String,UpdateRatingInformation>  generateUpdateRating(){
 		
-		
 		Map<String,UpdateRatingInformation> updateRatingInfo = new HashMap<String,UpdateRatingInformation>();
 		
 		int numberOfCorruptedUPdates = 0;

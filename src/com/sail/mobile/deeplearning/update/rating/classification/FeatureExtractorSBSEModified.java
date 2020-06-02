@@ -100,7 +100,7 @@ public class FeatureExtractorSBSEModified {
 	
 	public int calculateTargetUpdateLabel(double negativityRatio , DescriptiveStatistics stats){
 		double oneStanDev = stats.getStandardDeviation() - stats.getMean();	
-		//System.out.println("NR: " + negativityRatio + " 1 + 1/2SD = "  (1 + haflStdDev) + " 1 - 1/2SD = " + (1 - haflStdDev));
+		
 		if(negativityRatio > 1 + oneStanDev){
 			return BAD_UPDATE;
 		}else if (negativityRatio < 1 - oneStanDev){
@@ -197,6 +197,9 @@ public class FeatureExtractorSBSEModified {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
 
 	public static void main(String[] args) throws Exception {
 		FeatureExtractorSBSEModified ob = new FeatureExtractorSBSEModified();
