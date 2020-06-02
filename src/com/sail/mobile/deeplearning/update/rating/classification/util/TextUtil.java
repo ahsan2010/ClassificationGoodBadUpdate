@@ -106,4 +106,30 @@ public class TextUtil {
 
 		printSetsDiff(setA, setB, "setAName", "setBName");
 	}
+	
+	public static Set<String> convertStringToSet(String names){
+		Set<String> wordList = new HashSet<String>();
+		String words[] = names.split("-");
+		for (String word : words) {
+			if (word.trim().length() <= 0) {
+				continue;
+			}
+			wordList.add(word.trim());
+		}
+		return wordList;
+	}
+	
+	public static String setToString(Set<String>data){
+		String conversionString = "";
+		int total = 0;
+		for (String d : data) {
+			++total;
+			conversionString += d;
+			if (total < data.size()) {
+				conversionString += "-";
+			}
+		}
+
+		return conversionString;
+	}
 }

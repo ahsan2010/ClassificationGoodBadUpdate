@@ -135,8 +135,6 @@ public class FeatureExtractor3 {
 			UpdateTable update = updates.get(i);
 			DateTime releaseTime = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE());
 			if (releaseTime.isAfter(Constants.EPERIMENT_START_TIME.minusDays(1))) {
-				// get the previous update. our analysis start 2016-04-20. we
-				// only considering the last immediate update of this time
 				if (i > 0) {
 					return (i - 1);
 				} else if (i == 0) {
@@ -220,7 +218,7 @@ public class FeatureExtractor3 {
 	
 	
 	public Map<String, Double> generateFeatures(String appName, UpdateTable presentUpdate, UpdateTable oldUpdate,
-			Parser p, int index, ArrayList<UpdateTable> updates) {
+			Parser2 p, int index, ArrayList<UpdateTable> updates) {
 
 		Map<String, Double> features = new HashMap<String, Double>();
 
@@ -382,7 +380,7 @@ public class FeatureExtractor3 {
 		
 		
 		int missing_feature_generation_update = 0;
-		Parser p = new Parser();
+		Parser2 p = new Parser2();
 
 		CsvWriter writer = new CsvWriter(
 				"/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data/updates_Data_two_category.csv");
@@ -663,5 +661,4 @@ public class FeatureExtractor3 {
 		ob.FeatureExtractor();
 		System.out.println("Program finishes successfully");
 	}
-
 }

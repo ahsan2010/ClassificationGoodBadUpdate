@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import com.sail.awsomebasupdates.model.AppAnalyticsModel;
 import com.sail.mobile.deeplearning.update.rating.classification.model.AdInformation;
 import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateTable;
 
@@ -43,6 +44,24 @@ public class SortUtil {
 		}
 	}
 
+	
+	public static void sortAppAnalyticsUpdateByReleaseDate(Map<String, ArrayList<AppAnalyticsModel>> appUpdateAnalytics) {
+		for (String appName : appUpdateAnalytics.keySet()) {
+			ArrayList<AppAnalyticsModel> updatesAnalytics = appUpdateAnalytics.get(appName);
+			Collections.sort(updatesAnalytics, new Comparator<AppAnalyticsModel>() {
+				@Override
+				public int compare(AppAnalyticsModel o1, AppAnalyticsModel o2) {
+					if (o1.getJodaReleaseDate().isAfter(o2.getJodaReleaseDate())) {
+						return 1;
+					} else if (o1.getJodaReleaseDate().isBefore(o2.getJodaReleaseDate())) {
+						return -1;
+					}
+					return 0;
+				}
+			});
+		}
+	}
+	
 	public static void sortDateTime(ArrayList<DateTime> dateList) {
 		Collections.sort(dateList, new Comparator<DateTime>() {
 

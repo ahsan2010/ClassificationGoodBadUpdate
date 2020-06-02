@@ -223,7 +223,7 @@ public class FeatureExtractor2 {
 	
 	
 	public Map<String, Double> generateFeatures(String appName, UpdateTable presentUpdate, UpdateTable oldUpdate,
-			Parser p, int index, ArrayList<UpdateTable> updates) {
+			Parser2 p, int index, ArrayList<UpdateTable> updates) {
 
 		Map<String, Double> features = new HashMap<String, Double>();
 
@@ -386,7 +386,7 @@ public class FeatureExtractor2 {
 		
 		
 		int missing_feature_generation_update = 0;
-		Parser p = new Parser();
+		Parser2 p = new Parser2();
 		
 		String path = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT/scripts/Data_June/";
 		

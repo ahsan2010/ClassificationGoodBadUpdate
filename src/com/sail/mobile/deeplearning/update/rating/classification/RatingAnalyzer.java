@@ -7,12 +7,14 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
+import com.sail.awsomebasupdates.model.AppAnalyticsModel;
 import com.sail.awsomebasupdates.model.DailyReviewsStatus;
 import com.sail.mobile.analysis.adevolution.util.DateUtil;
 import com.sail.mobile.deeplearning.update.rating.classification.Loader.AdsInputDataLoader;
 import com.sail.mobile.deeplearning.update.rating.classification.common.Constants;
 import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateRatingInformation;
 import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateTable;
+import com.sail.mobile.deeplearning.update.rating.classification.util.FileUtil;
 
 /**
  * Filtering some data to make sure we have sufficient number of data to train and test sequence of versions
@@ -23,8 +25,7 @@ import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateTab
 public class RatingAnalyzer {
 	AnalyzePositiveReviewsOnlyII positiveReviewObject;
 	HashMap<String, DailyReviewsStatus> appDailyRating = new HashMap<String, DailyReviewsStatus>();
-	HashMap<String,ArrayList<UpdateTable>> appUpdates;
-	
+	Map<String, ArrayList<AppAnalyticsModel>> appUpdatesAnalyticList;
 	
 	public Map<String,UpdateRatingInformation>  generateUpdateRating(){
 		
@@ -35,33 +36,30 @@ public class RatingAnalyzer {
 		int missingApp = 0;
 		
 		
-		for(String appName : appUpdates.keySet()){
-			
-		
-			if(!positiveReviewObject.appsInformation.containsKey(appName)){
+		for(String packageName : appUpdatesAnalyticList.keySet()){
+			if(!positiveReviewObject.appsInformation.containsKey(packageName)){
 				missingApp ++;
 				continue;
 			}
-			String appId =  Integer.toString(positiveReviewObject.appsInformation.get(appName).getAPP_ID());
-			ArrayList<UpdateTable> updates = appUpdates.get(appName);
+			
+			String appId =  Integer.toString(positiveReviewObject.appsInformation.get(packageName).getAPP_ID());
+			ArrayList<AppAnalyticsModel> updates = appUpdatesAnalyticList.get(packageName);
 			
 			for(int i = 0 ; i < updates.size(); i ++){
 				
-
-				
-				UpdateTable update = updates.get(i);
+				AppAnalyticsModel update = updates.get(i);
 				DateTime dateBeforeReleasingPresentUpdate = null;
 				DateTime dateBeforeReleasingNextUpdate = null;
 				
 				// Last update
 				if( i == updates.size() - 1){
-					dateBeforeReleasingPresentUpdate = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE());
-					DateTime presentUpdateDate = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE()).minusDays(1);				
+					dateBeforeReleasingPresentUpdate = update.getJodaReleaseDate();
+					DateTime presentUpdateDate = update.getJodaReleaseDate().minusDays(1);				
 					dateBeforeReleasingNextUpdate = Constants.EPERIMENT_END_TIME;
 				}else{
-					UpdateTable nextUpdate = updates.get(i+1);
-					 dateBeforeReleasingPresentUpdate = DateUtil.formatterWithHyphen.parseDateTime(update.getRELEASE_DATE());	
-					 dateBeforeReleasingNextUpdate = DateUtil.formatterWithHyphen.parseDateTime(nextUpdate.getRELEASE_DATE()).minusDays(1);	
+					AppAnalyticsModel nextUpdate = updates.get(i+1);
+					dateBeforeReleasingPresentUpdate = update.getJodaReleaseDate();	
+					dateBeforeReleasingNextUpdate = nextUpdate.getJodaReleaseDate().minusDays(1);	
 				}
 				
 				//System.out.println(dateBeforeReleasingPresentUpdate+" Update: " + updates.get(i).getRELEASE_DATE()+" " +  updates.get(i+1).getRELEASE_DATE() +" " + updates.get(i).getVERSION_CODE() +" "+updates.get(i+1).getVERSION_CODE()+" "+ updates.size());
@@ -84,25 +82,23 @@ public class RatingAnalyzer {
 				DailyReviewsStatus ratingBeforeDeployingNextUpdate = appDailyRating.get(keyNext);
 				//String key = id + "," + dateString;
 				
+				
 				if(ratingBeforeDeployingNextUpdate == null){
 					numberOfCorruptedUPdates++;
 					//System.out.println("Problem deploying next update");
 					continue;
 				}
 				if(ratingBeforeDeployingUpdate == null){
-					System.out.println(appName +" " + update.getVERSION_CODE() +" " + update.getRELEASE_DATE());
+					//System.out.println(packageName +" " + update.getVersionCode() +" " + update.getReleaseDate());
 					numberOfCorruptedUPdates++;
-					//System.out.println("Problem deploying before update");
 					continue;
 				}
 				
 				if(updateLifeTimeInDays < 0){
-					//System.err.println(dateBeforeReleasingPresentUpdate.toString()+" " + dateBeforeReleasingNextUpdate.toString());
 					continue;
 				}
 				
 				//System.out.println(dateBeforeReleasingPresentUpdateString+" "+ dateBeforeReleasingNextUpdateString);
-				
 				UpdateRatingInformation updateInformation = null;
 				
 				double oneStar = Math.abs(ratingBeforeDeployingNextUpdate.getOneStar() - ratingBeforeDeployingUpdate.getOneStar());
@@ -132,32 +128,41 @@ public class RatingAnalyzer {
 				updateInformation.setEndDate(dateBeforeReleasingNextUpdate);
 				updateInformation.setUpdateLifeTimeInDays(updateLifeTimeInDays);
 				updateInformation.setAppId(appId);
-				updateInformation.setPackageName(update.getPACKAGE_NAME());
-				updateInformation.setVersionCode(update.getVERSION_CODE());
+				updateInformation.setPackageName(update.getPackageName());
+				updateInformation.setVersionCode(update.getVersionCode());
 				updateInformation.setTotalStar(total);
-				updateRatingInfo.put(appName+Constants.COMMA+update.getVERSION_CODE(), updateInformation);
-				//System.out.println("Success");
+				updateRatingInfo.put(packageName + "-" +update.getVersionCode(), updateInformation);
+				
+				//System.out.println("Apprating: " + packageName + " Version: " + update.getVersionCode() + " One = "+oneStar +" Two = " + twoStar + " Three = " + threeStar + " Four = " + fourStar + " Five = " + fiveStar + " Aggregated = " + rating);
+				//System.out.println("Apprating: " + packageName + " Version: " + update.getVersionCode() + " One = "+update.getUpdateOneStar() +" Two = " + update.getUpdateTwoStar() + " Three = " + update.getUpdateThreeStar() + " Four = " + update.getUpdateFourStar() + " Five = " + update.getUpdateFiveStar() + " Aggregated = " + update.getUpdateAggreatedRating());
+				
+				
 			}
 		}
+		System.out.println("Total updates [" + updateRatingInfo.size() + "]");
 		System.out.println("Missing Application ["+missingApp+"]");
 		System.out.println("Number of Corrupted Updates: ["+numberOfCorruptedUPdates+']');		
 		return updateRatingInfo;
 	}
 	
 	
+	public RatingAnalyzer(Map<String, ArrayList<AppAnalyticsModel>> appUpdatesAnalyticList){
+		this.appUpdatesAnalyticList = appUpdatesAnalyticList;
+		positiveReviewObject = new AnalyzePositiveReviewsOnlyII();
+		positiveReviewObject.generateDailyRating();
+		appDailyRating = positiveReviewObject.appDailyRating;
+	}
+
 	public RatingAnalyzer(){
 		positiveReviewObject = new AnalyzePositiveReviewsOnlyII();
 		positiveReviewObject.generateDailyRating();
 		appDailyRating = positiveReviewObject.appDailyRating;
-		appUpdates = AdsInputDataLoader.readUpdateData(Constants.APP_UPDATE_TABLE_PATH_RATING);
-		
 	}
 	
 	public static void main(String arg[]){
-		RatingAnalyzer ob = new RatingAnalyzer();
+		RatingAnalyzer ob = new RatingAnalyzer(FileUtil.readAppAnalyticsInfo(Constants.APP_ANALYTICS_FILE_PATH));
 		Map<String,UpdateRatingInformation> updateRatingInfo = ob.generateUpdateRating();
 		System.out.println("Total update Rating ["+updateRatingInfo.size()+"]");
-		
 	}
 
 }

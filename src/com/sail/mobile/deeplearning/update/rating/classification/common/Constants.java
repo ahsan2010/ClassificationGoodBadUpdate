@@ -18,18 +18,19 @@ public class Constants {
 	
 
 	public static DateTime EPERIMENT_START_TIME = DateUtil.formatter.parseDateTime("2016_04_20");
-	public static DateTime EPERIMENT_END_TIME = DateUtil.formatter.parseDateTime("2017_09_20");
+	public static DateTime EPERIMENT_END_TIME = DateUtil.formatter.parseDateTime("2019_04_20");
 
 	//public static String ROOT = "/home/ahsan/Documents/SAILLabResearch/DeepLaerningProject/ROOT";
 	///home/local/SAIL/ahsan/Documents/Update_Classification/
 	//public static String ROOT = "/home/ahasan/Documents/ROOT";
-	public static String ROOT = "/home/local/SAIL/ahsan/Documents/Update_Classification/ROOT";
+	public static String ROOT = "/home/local/SAIL/ahsan/Documents/Pinky/Documents/Update_Classification_SBSE_May/ROOT";
 	
-
-	public static final String VARIFIED_AD_PACKAGE_LIST = ROOT+"/scripts/verified_ads.csv";
+	public static String APP_ANALYTICS_FILE_PATH = ROOT + "/Data/App_Analytics_Full_Info.csv";
+	public static final String APP_NEGATIVITY_RATIO_ANALYSIS_FILE = ROOT + "/result/app_negativity_ratio.csv";
+	public static final String VARIFIED_AD_PACKAGE_LIST = ROOT+"/Data/Verified_Ads_Updated.csv";
 	public static String csvSdkVersionInfoPath = ROOT +"/scripts/SDK_Versions_Report.csv";
 	//all_app_update_2016_Apps.csv
-	public static final String APP_UPDATE_TABLE_PATH_RATING = ROOT + "/scripts/studied_app_updates_final_2016.csv";
+	public static final String APP_UPDATE_TABLE_PATH_RATING = ROOT + "/Data/Final_Studied_App_Updates_2016_2019.csv";
 	public static final String APP_UPDATE_TABLE_PATH = ROOT + "/scripts/studied_app_updates_final_2016.csv";
 	public static final String ADS_UPDATE_DATA_PATH = ROOT + "/scripts/Update_Verified__Group_Ads_Usage_Info_Overtime.csv";
 	public static String APP_CSV_PATH = ROOT + "/scripts/app_top_2016.csv";

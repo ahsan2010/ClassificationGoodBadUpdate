@@ -248,7 +248,6 @@ public class FileUtil
 			{
 				String name[] = line.split(",");
 						adPackageMapGroup.put(name[0].trim(),name[1].trim());
-						
 						System.out.println(name[0] + " " + name[1]);
 				
 			}

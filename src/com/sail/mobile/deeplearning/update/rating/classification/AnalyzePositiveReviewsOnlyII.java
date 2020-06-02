@@ -25,8 +25,8 @@ public class AnalyzePositiveReviewsOnlyII
 {
 
 	public static final String WORKING_DIRECTORY = Constants.ROOT + "/Update_Rating_Code_Safwat/";
-	public static final String ALL_UPDATES_FILE = WORKING_DIRECTORY+"update_2016_app_daily_rating.csv";
-	public static final String APP_DAILY_RATING_FILE = WORKING_DIRECTORY+"Apps_Daily_Rating.csv";
+	public static final String ALL_UPDATES_FILE = WORKING_DIRECTORY+"Update_2016_2019_For_App_Daily_Rating.csv";
+	public static final String APP_DAILY_RATING_FILE = WORKING_DIRECTORY+"App_Daily_Rating_Final_2016_2019.csv";
 	public static final String UPDATE_POSITIVITY_FILE = WORKING_DIRECTORY+"Updates_Positivity.csv";
 	public static final String UPDATE_DISCONTINUITY_FILE = WORKING_DIRECTORY+"Apps_Discontinuity.csv";
 	public static final String UPDATE_INVESTIGATION_FILE = WORKING_DIRECTORY+"Updates_Investigate_Positivity.csv";
@@ -131,7 +131,13 @@ public static Map<String,AppTable> readAppData(){
 			{
 				appInfo = appDailyPositivity.get(currentAppID);
 			}
+			
+			//System.out.println(currentRecord);
+			
 			Date currentDate = DateUtil.readShortDate(currentRecord, 8);
+			
+		
+			
 			
 			// Find the first crawling date for the app
 			if(appInfo.getStartRating()!=null)
@@ -161,6 +167,9 @@ public static Map<String,AppTable> readAppData(){
 				DailyReviewsStatus dailyStatus = getDailyStatus(currentRecord);
 				appInfo.setEndRating(dailyStatus);
 			}
+			//if(currentAppID == 3295)
+			//System.out.println(currentAppID + " Start: " + appInfo.getStartRating().getDate() +" End: " + appInfo.getEndRating().getDate());
+			
 			oldAppID = currentAppID;
 			
 		}
@@ -191,7 +200,7 @@ public static Map<String,AppTable> readAppData(){
 	
 	public static void readAppDailyRating() throws Exception
 	{
-		System.out.println("Step2: Loading apps daily rating during the overall study period (1.5 year).");
+		System.out.println("Step2: Loading apps daily rating during the overall study period (3 years).");
 		String currentRecord, oldRecord;
 		BufferedReader appsFileReader = new BufferedReader(new FileReader(APP_DAILY_RATING_FILE));
 		appsFileReader.readLine(); // Skip header
@@ -604,7 +613,7 @@ public static Map<String,AppTable> readAppData(){
 		readAppDailyRating();
 		
 		//investigate single app
-		investigateSingleApp();
+		//investigateSingleApp();
 		// Step 3 : load updates data and calculate app ngativity just before deploying the new update
 		//loadUpdatesData();
 		
