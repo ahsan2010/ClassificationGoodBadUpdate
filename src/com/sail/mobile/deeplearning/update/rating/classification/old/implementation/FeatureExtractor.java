@@ -1,4 +1,4 @@
-package com.sail.mobile.deeplearning.update.rating.classification;
+package com.sail.mobile.deeplearning.update.rating.classification.old.implementation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +19,7 @@ import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 import com.sail.mobile.analysis.adevolution.util.DateUtil;
 import com.sail.mobile.analysis.adevolution.util.FileUtil;
+import com.sail.mobile.deeplearning.update.rating.classification.RatingAnalyzer;
 import com.sail.mobile.deeplearning.update.rating.classification.Loader.AdsInputDataLoader;
 import com.sail.mobile.deeplearning.update.rating.classification.Loader.SDKInfoLoader;
 import com.sail.mobile.deeplearning.update.rating.classification.common.Constants;

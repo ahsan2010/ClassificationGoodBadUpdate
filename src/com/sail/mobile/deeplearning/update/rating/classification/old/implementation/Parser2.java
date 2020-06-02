@@ -1,4 +1,4 @@
-package com.sail.mobile.deeplearning.update.rating.classification;
+package com.sail.mobile.deeplearning.update.rating.classification.old.implementation;
 
 
 import java.util.Map;

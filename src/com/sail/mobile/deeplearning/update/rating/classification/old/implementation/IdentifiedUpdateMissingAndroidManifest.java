@@ -1,5 +1,5 @@
 
-package com.sail.mobile.deeplearning.update.rating.classification;
+package com.sail.mobile.deeplearning.update.rating.classification.old.implementation;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

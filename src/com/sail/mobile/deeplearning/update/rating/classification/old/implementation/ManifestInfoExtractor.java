@@ -1,10 +1,11 @@
 
-package com.sail.mobile.deeplearning.update.rating.classification;
+package com.sail.mobile.deeplearning.update.rating.classification.old.implementation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.csvreader.CsvWriter;
+import com.sail.mobile.deeplearning.update.rating.classification.Parser;
 import com.sail.mobile.deeplearning.update.rating.classification.Loader.AdsInputDataLoader;
 import com.sail.mobile.deeplearning.update.rating.classification.common.Constants;
 import com.sail.mobile.deeplearning.update.rating.classification.model.UpdateTable;
