@@ -37,10 +37,8 @@ public class FeatureExtractorSBSEModified {
 	
 	public static String APP_ANALYTICS_FILE_PATH = Constants.APP_ANALYTICS_FILE_PATH;
 	
+	public static String ANDROID_PERMISSION_FILE = Constants.ROOT + "/Data/Permission_List.csv";
 	
-	public static String ANDROID_DANGEROUS_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/dangerous_permission_list.csv";
-	public static String ANDROID_NORMAL_PERMISSION_LIST = "/home/ahsan/SampleApks/result/PermissionAnalysis/android_permission_list.csv";
-
 	Map<String, String> varifiedAdPackageMapGroup = FileUtil.readVerfiedAdList(Constants.VARIFIED_AD_PACKAGE_LIST);
 	
 	double threshold_value = 0.1;
@@ -198,7 +196,24 @@ public class FeatureExtractorSBSEModified {
 		}
 	}
 	
-	
+	public void extractFeaturesFromUpdates() throws Exception{
+		for(String appName : appUpdatesAnalyticList.keySet()){
+			ArrayList<AppAnalyticsModel> updates = appUpdatesAnalyticList.get(appName);
+			for(int i = 1 ; i < updates.size() - 1 ; i ++){
+				AppAnalyticsModel prevUpdate = updates.get(i - 1);
+				AppAnalyticsModel update = updates.get(i);
+				
+				FeatureModel fm = new FeatureModel();
+				fm.setAppName(update.getPackageName());
+				fm.setVersionCode(update.getVersionCode());
+				fm.setReleaseDate(update.getReleaseDate());
+				fm.setApkSize(update.getApkSizeByte()/1000000);
+				fm.setNumAdLibraries(update.getAdLibraryList().size());
+				
+				
+			}
+		}
+	}
 	
 
 	public static void main(String[] args) throws Exception {

@@ -8,7 +8,7 @@ public class FeatureModel {
 	public String appName;
 	public String versionCode;
 	public String releaseDate;
-	public double apkSize;
+	public double apkSize; // MegaBytes
 	public int numAdLibraries;
 	public int numPermissions;
 	public int numDangerousPermissions;

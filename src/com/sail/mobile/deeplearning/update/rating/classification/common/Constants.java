@@ -17,6 +17,11 @@ public class Constants {
 	
 	
 
+	public static String PERMISSION_NORMAL = "Normal";
+	public static String PERMISSION_DANGEROUD = "Dangerous";
+	public static String PERMISSION_SIGNATURE = "Signature";
+	public static String PERMISSION_CUSTOM = "Custom";
+	
 	public static DateTime EPERIMENT_START_TIME = DateUtil.formatter.parseDateTime("2016_04_20");
 	public static DateTime EPERIMENT_END_TIME = DateUtil.formatter.parseDateTime("2019_04_20");
 
