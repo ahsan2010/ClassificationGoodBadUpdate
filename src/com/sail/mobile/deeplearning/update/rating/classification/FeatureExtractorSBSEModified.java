@@ -410,17 +410,17 @@ public class FeatureExtractorSBSEModified {
 		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumIntent()));
 		
 		writer.write(String.format("%.4f", fm.getChangeApkSize()));
-		writer.write(String.format("%.0", fm.getChangeNumAdLib()));
-		writer.write(String.format("%.0", fm.getChangeMinSdkVersion()));
-		writer.write(String.format("%.0", fm.getChangeTargetSdkVersion()));
-		writer.write(String.format("%.0", fm.getChangeNumPermission()));
-		writer.write(String.format("%.0", fm.getChangeNumDangerousPermission()));
-		writer.write(String.format("%.0", fm.getChangeNumNormalPermission()));
-		writer.write(String.format("%.0", fm.getChangeNumCustomPermission()));
-		writer.write(String.format("%.0", fm.getChangeNumActivity()));
-		writer.write(String.format("%.0", fm.getChangeNumService()));
-		writer.write(String.format("%.0", fm.getChangeNumReceiver()));
-		writer.write(String.format("%.0", fm.getChangeNumIntent()));
+		writer.write(String.format("%.0f", fm.getChangeNumAdLib()));
+		writer.write(String.format("%.0f", fm.getChangeMinSdkVersion()));
+		writer.write(String.format("%.0f", fm.getChangeTargetSdkVersion()));
+		writer.write(String.format("%.0f", fm.getChangeNumPermission()));
+		writer.write(String.format("%.0f", fm.getChangeNumDangerousPermission()));
+		writer.write(String.format("%.0f", fm.getChangeNumNormalPermission()));
+		writer.write(String.format("%.0f", fm.getChangeNumCustomPermission()));
+		writer.write(String.format("%.0f", fm.getChangeNumActivity()));
+		writer.write(String.format("%.0f", fm.getChangeNumService()));
+		writer.write(String.format("%.0f", fm.getChangeNumReceiver()));
+		writer.write(String.format("%.0f", fm.getChangeNumIntent()));
 		
 		writer.write(String.format("%.4f", fm.getPreviousAllUpdatesMedianAggregatedRating()));
 		writer.write(String.format("%.4f", fm.getPreviousAllUpdatsMedianNegativeRatingRatio()));
