@@ -316,12 +316,7 @@ public class FeatureModel {
 	public void setNumCustomPermission(int numCustomPermission) {
 		this.numCustomPermission = numCustomPermission;
 	}
-	public boolean isChangeNumCustomPermission() {
-		return changeNumCustomPermission;
-	}
-	public void setChangeNumCustomPermission(boolean changeNumCustomPermission) {
-		this.changeNumCustomPermission = changeNumCustomPermission;
-	}
+	
 	public double getIncreaseDecreaseNumCustomPermission() {
 		return increaseDecreaseNumCustomPermission;
 	}
