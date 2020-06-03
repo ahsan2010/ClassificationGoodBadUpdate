@@ -9,7 +9,15 @@ public class PermissionModel {
 	Set<String> dangerousPermissionList = new HashSet<String>();
 	Set<String> customPermissionList = new HashSet<String>();
 	Set<String> signaturePermissionList = new HashSet<String>();
+	Set<String> permissionNotUsedByThirdparty = new HashSet<String>();
 	
+	
+	public Set<String> getPermissionNotUsedByThirdparty() {
+		return permissionNotUsedByThirdparty;
+	}
+	public void setPermissionNotUsedByThirdparty(Set<String> permissionNotUsedByThirdparty) {
+		this.permissionNotUsedByThirdparty = permissionNotUsedByThirdparty;
+	}
 	public Set<String> getNormalPermissionList() {
 		return normalPermissionList;
 	}

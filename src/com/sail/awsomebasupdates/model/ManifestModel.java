@@ -10,7 +10,16 @@ public class ManifestModel {
 	public String activityList;
 	public String serviceList;
 	public String intentList;
+	public String receiverList;
 	
+	
+	
+	public String getReceiverList() {
+		return receiverList;
+	}
+	public void setReceiverList(String receiverList) {
+		this.receiverList = receiverList;
+	}
 	public String getPackageName() {
 		return packageName;
 	}

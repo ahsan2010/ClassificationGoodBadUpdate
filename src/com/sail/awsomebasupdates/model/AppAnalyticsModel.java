@@ -29,6 +29,7 @@ public class AppAnalyticsModel {
 	public Set<String> activityList;
 	public Set<String> serviceList;
 	public Set<String> intentList;
+	public Set<String> receiverList;
 	public String launcherActivity;
 	public Set<String> adLibraryList;
 	public Set<String> adLibraryImportedList;
@@ -48,8 +49,6 @@ public class AppAnalyticsModel {
 	
 	
 	DescriptiveStatistics previousRatioNegativesStat = new DescriptiveStatistics();
-	
-	
 	
 	
 	public double getPrevUpdatesNegRatings() {
@@ -309,5 +308,14 @@ public class AppAnalyticsModel {
 			return  (getRatioNegativeRatings()/Math.max(getPrevNegativeRatioMedian(),1));
 		}
 		return (getRatioNegativeRatings()/getPrevNegativeRatioMedian());
+	}
+	public Set<String> getReceiverList() {
+		return receiverList;
+	}
+	public void setReceiverList(Set<String> receiverList) {
+		this.receiverList = receiverList;
+	}
+	public void setPreviousRatioNegativesStat(DescriptiveStatistics previousRatioNegativesStat) {
+		this.previousRatioNegativesStat = previousRatioNegativesStat;
 	}
 }

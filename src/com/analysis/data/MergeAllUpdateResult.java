@@ -47,6 +47,7 @@ public class MergeAllUpdateResult {
 			"Activity_List",
 			"Service_List",
 			"Intent_List",
+			"Recceiver_List",
 			"Total_Ad_Library",
 			"List_Of_Ad_Library",
 			"List_Of_Ad_Library_Imported",
@@ -99,6 +100,7 @@ public class MergeAllUpdateResult {
 			String activityList = reader.get("Activity");
 			String serviceList = reader.get("Service");
 			String intentList = reader.get("Intent");
+			String receiverList = reader.get("Receiver");
 
 			String key = packageName + "-" + versionCode;
 
@@ -111,6 +113,7 @@ public class MergeAllUpdateResult {
 			ob.setPermissionList(permissionList);
 			ob.setServiceList(serviceList);
 			ob.setIntentList(intentList);
+			ob.setReceiverList(receiverList);
 			updateInfoList.put(key, ob);
 
 		}
@@ -288,6 +291,7 @@ public class MergeAllUpdateResult {
 				writer.write(manifestModel.getActivityList());
 				writer.write(manifestModel.getServiceList());
 				writer.write(manifestModel.getIntentList());
+				writer.write(manifestModel.getReceiverList());
 				writer.write(adsUsageModel.getTotalAds());
 				writer.write(adsUsageModel.getListOfAds());
 				writer.write(adsUsageModel.getAdsImport());

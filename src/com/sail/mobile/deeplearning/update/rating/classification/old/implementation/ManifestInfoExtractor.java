@@ -26,6 +26,7 @@ public class ManifestInfoExtractor {
 		writer.write("Activity");
 		writer.write("Service");
 		writer.write("Intent");
+		writer.write("Receiver");
 		writer.endRecord();
 
 		int totalAnalyzeUpdate = 0;
@@ -52,6 +53,7 @@ public class ManifestInfoExtractor {
 					writer.write(TextUtil.setToString(p.getActivityList()));
 					writer.write(TextUtil.setToString(p.getServiceList()));
 					writer.write(TextUtil.setToString(p.getIntentList()));
+					writer.write(TextUtil.setToString(p.getReceiverList()));
 					writer.endRecord();
 					++totalAnalyzeUpdate;
 					

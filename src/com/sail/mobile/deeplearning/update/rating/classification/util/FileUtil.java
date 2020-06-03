@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.joda.time.DateTime;
 
 import com.csvreader.CsvReader;
@@ -478,6 +477,7 @@ public class FileUtil {
 				String activityList = reader.get("Activity_List");
 				String servoceList = reader.get("Service_List");
 				String intentList = reader.get("Intent_List");
+				String receiverList = reader.get("Receiver_List");
 				String totalAdLibrary = reader.get("Total_Ad_Library");
 				String listOfAdLibrary = reader.get("List_Of_Ad_Library");
 				String listOfAdLibraryImported = reader.get("List_Of_Ad_Library_Imported");
@@ -506,6 +506,7 @@ public class FileUtil {
 				ob.setActivityList(TextUtil.convertStringToSet(activityList));
 				ob.setServiceList(TextUtil.convertStringToSet(servoceList));
 				ob.setIntentList(TextUtil.convertStringToSet(intentList));
+				ob.setReceiverList(TextUtil.convertStringToSet(receiverList));
 				ob.setAdLibraryList(TextUtil.convertStringToSet(listOfAdLibrary));
 				ob.setAdLibraryImportedList(TextUtil.convertStringToSet(listOfAdLibraryImported));
 				ob.setAdLibraryClassCount(listOfAdLibraryClass);
@@ -637,5 +638,40 @@ public class FileUtil {
 			}
 		}
 		System.out.println("Update fixes = " + missing);
+	}
+	
+	
+	public static Map<String,Set<String>>  readAndroidPermissionList(String path){
+		Map<String,Set<String>> androidPermissionList = new HashMap<String,Set<String>>();
+		for(String permissionCat : Constants.permissionCategory){
+			androidPermissionList.put(permissionCat, new HashSet<String>());
+		}
+		try{
+			CsvReader reader = new CsvReader(path);
+			reader.readHeaders();
+			while(reader.readRecord()){
+				String permissionName = reader.get("Permission_Name");
+				String protectionLevel = reader.get("Protection_Level");
+				if(protectionLevel.equals("dangerous")){
+					androidPermissionList.get(Constants.PERMISSION_DANGEROUS).add(permissionName);
+				}else if (protectionLevel.equals("normal")){
+					androidPermissionList.get(Constants.PERMISSION_NORMAL).add(permissionName);
+				}else if (protectionLevel.contains("signature")){
+					androidPermissionList.get(Constants.PERMISSION_SIGNATURE).add(permissionName);
+				}else if (protectionLevel.equals("No")){
+					androidPermissionList.get(Constants.PERMISSION_NO_LABEL).add(permissionName);
+				}
+				androidPermissionList.get(Constants.ALL_PERMISSION).add(permissionName);
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		for(int i = 0 ; i < Constants.permissionCategory.size() ; i ++ ){
+			System.out.println(Constants.permissionCategory.get(i) + " " + androidPermissionList.get(Constants.permissionCategory.get(i)).size());
+		}
+		
+		return androidPermissionList;
 	}
 }

@@ -1,5 +1,8 @@
 package com.sail.mobile.deeplearning.update.rating.classification.common;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.joda.time.DateTime;
 
 import com.sail.mobile.analysis.adevolution.util.DateUtil;
@@ -18,9 +21,14 @@ public class Constants {
 	
 
 	public static String PERMISSION_NORMAL = "Normal";
-	public static String PERMISSION_DANGEROUD = "Dangerous";
+	public static String PERMISSION_DANGEROUS = "Dangerous";
 	public static String PERMISSION_SIGNATURE = "Signature";
 	public static String PERMISSION_CUSTOM = "Custom";
+	public static String PERMISSION_NO_LABEL = "No";
+	public static String ALL_PERMISSION = "All_Permission";
+	
+	public static List<String> permissionCategory = Arrays.asList(PERMISSION_NORMAL, PERMISSION_DANGEROUS, 
+			PERMISSION_SIGNATURE, PERMISSION_CUSTOM,PERMISSION_NO_LABEL, ALL_PERMISSION);
 	
 	public static DateTime EPERIMENT_START_TIME = DateUtil.formatter.parseDateTime("2016_04_20");
 	public static DateTime EPERIMENT_END_TIME = DateUtil.formatter.parseDateTime("2019_04_20");

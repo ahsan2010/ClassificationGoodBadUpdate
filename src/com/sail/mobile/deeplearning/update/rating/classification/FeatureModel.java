@@ -13,40 +13,54 @@ public class FeatureModel {
 	public int numPermissions;
 	public int numDangerousPermissions;
 	public int numNormalPermissions;
+	public int numCustomPermission;
 	public int minSdkVersion;
 	public int targetSdkVersion;
 	public int numActivity;
 	public int numService;
 	public int numReceiver;
 	public int numIntent;
+	
+	public double ratioMedianOfAllPreviousReleaseTime;
+	public double updateReleaseTime;
+	
 	public double releaseNoteLengthWord;
-	public double Release_note_changed_word;
+	public double releaseNoteModified;
+	
 	public boolean changeApkSize;
 	public boolean changeNumAdLib;
 	public boolean changeNumPermission;
 	public boolean changeNumNormalPermission;
 	public boolean changeNumDangerousPermission;
+	public boolean changeNumCustomPermission;
+	
 	public boolean changeMinSdkVersion;
 	public boolean changeTargetSdkVersion;
 	public boolean changeNumActivity;
 	public boolean changeNumService;
 	public boolean changeNumReceiver;
 	public boolean changeNumIntent;
+	
 	public double  increaseDecreaseApkSize;
-	public double increaseDecreaseNumAdLib;
-	public double increaseDecreaseNumPermission;
-	public double increaseDecreaseNumNormalPermission;
-	public double increaseDecreaseNumDangerousPermission;
-	public double increaseDecreaseMinSdkVersion;
-	public double inceaseDecreaseTargetSdkVersion;
-	public double increaseDecreaseNumActivity;
-	public double increaseDecreaseNumService;
-	public double increaseDecreaseNumIntent;
-	public double increaseDecreaseNumReceiver;
-	public double previousMedianAggregatedRating;
-	public double previousMedianNegativityRatio;
-	public double negativityRatio;
-	public int targetValue;
+	public double  increaseDecreaseNumAdLib;
+	public double  increaseDecreaseNumPermission;
+	public double  increaseDecreaseNumNormalPermission;
+	public double  increaseDecreaseNumDangerousPermission;
+	public double  increaseDecreaseNumCustomPermission;
+	
+	public double  increaseDecreaseMinSdkVersion;
+	public double  inceaseDecreaseTargetSdkVersion;
+	public double  increaseDecreaseNumActivity;
+	public double  increaseDecreaseNumService;
+	public double  increaseDecreaseNumIntent;
+	public double  increaseDecreaseNumReceiver;
+	
+	public double  previousAllUpdatesMedianAggregatedRating;
+	public double  previousAllUpdatsMedianNegativeRatingRatio;
+	public double  previousUpdateAggregatedRating;
+	public double  previousUpdateNegativeRatingRatio;
+	public double  negativityRatio;
+	public int     targetValue;
 	
 	public String getAppName() {
 		return appName;
@@ -138,11 +152,11 @@ public class FeatureModel {
 	public void setReleaseNoteLengthWord(double releaseNoteLengthWord) {
 		this.releaseNoteLengthWord = releaseNoteLengthWord;
 	}
-	public double getRelease_note_changed_word() {
-		return Release_note_changed_word;
+	public double getReleaseNoteModified() {
+		return releaseNoteModified;
 	}
-	public void setRelease_note_changed_word(double release_note_changed_word) {
-		Release_note_changed_word = release_note_changed_word;
+	public void setReleaseNoteModified(double releaseNoteModified) {
+		this.releaseNoteModified = releaseNoteModified;
 	}
 	public boolean isChangeApkSize() {
 		return changeApkSize;
@@ -276,18 +290,7 @@ public class FeatureModel {
 	public void setIncreaseDecreaseNumReceiver(double increaseDecreaseNumReceiver) {
 		this.increaseDecreaseNumReceiver = increaseDecreaseNumReceiver;
 	}
-	public double getPreviousMedianAggregatedRating() {
-		return previousMedianAggregatedRating;
-	}
-	public void setPreviousMedianAggregatedRating(double previousMedianAggregatedRating) {
-		this.previousMedianAggregatedRating = previousMedianAggregatedRating;
-	}
-	public double getPreviousMedianNegativityRatio() {
-		return previousMedianNegativityRatio;
-	}
-	public void setPreviousMedianNegativityRatio(double previousMedianNegativityRatio) {
-		this.previousMedianNegativityRatio = previousMedianNegativityRatio;
-	}
+	
 	public double getNegativityRatio() {
 		return negativityRatio;
 	}
@@ -299,6 +302,60 @@ public class FeatureModel {
 	}
 	public void setTargetValue(int targetValue) {
 		this.targetValue = targetValue;
+	}
+	public int getNumCustomPermission() {
+		return numCustomPermission;
+	}
+	public void setNumCustomPermission(int numCustomPermission) {
+		this.numCustomPermission = numCustomPermission;
+	}
+	public boolean isChangeNumCustomPermission() {
+		return changeNumCustomPermission;
+	}
+	public void setChangeNumCustomPermission(boolean changeNumCustomPermission) {
+		this.changeNumCustomPermission = changeNumCustomPermission;
+	}
+	public double getIncreaseDecreaseNumCustomPermission() {
+		return increaseDecreaseNumCustomPermission;
+	}
+	public void setIncreaseDecreaseNumCustomPermission(double increaseDecreaseNumCustomPermission) {
+		this.increaseDecreaseNumCustomPermission = increaseDecreaseNumCustomPermission;
+	}
+	public double getPreviousAllUpdatesMedianAggregatedRating() {
+		return previousAllUpdatesMedianAggregatedRating;
+	}
+	public void setPreviousAllUpdatesMedianAggregatedRating(double previousAllUpdatesMedianAggregatedRating) {
+		this.previousAllUpdatesMedianAggregatedRating = previousAllUpdatesMedianAggregatedRating;
+	}
+	public double getPreviousAllUpdatsMedianNegativeRatingRatio() {
+		return previousAllUpdatsMedianNegativeRatingRatio;
+	}
+	public void setPreviousAllUpdatsMedianNegativeRatingRatio(double previousAllUpdatsMedianNegativeRatingRatio) {
+		this.previousAllUpdatsMedianNegativeRatingRatio = previousAllUpdatsMedianNegativeRatingRatio;
+	}
+	public double getPreviousUpdateAggregatedRating() {
+		return previousUpdateAggregatedRating;
+	}
+	public void setPreviousUpdateAggregatedRating(double previousUpdateAggregatedRating) {
+		this.previousUpdateAggregatedRating = previousUpdateAggregatedRating;
+	}
+	public double getPreviousUpdateNegativeRatingRatio() {
+		return previousUpdateNegativeRatingRatio;
+	}
+	public void setPreviousUpdateNegativeRatingRatio(double previousUpdateNegativeRatingRatio) {
+		this.previousUpdateNegativeRatingRatio = previousUpdateNegativeRatingRatio;
+	}
+	public double getRatioMedianOfAllPreviousReleaseTime() {
+		return ratioMedianOfAllPreviousReleaseTime;
+	}
+	public void setRatioMedianOfAllPreviousReleaseTime(double ratioMedianOfAllPreviousReleaseTime) {
+		this.ratioMedianOfAllPreviousReleaseTime = ratioMedianOfAllPreviousReleaseTime;
+	}
+	public double getUpdateReleaseTime() {
+		return updateReleaseTime;
+	}
+	public void setUpdateReleaseTime(double updateReleaseTime) {
+		this.updateReleaseTime = updateReleaseTime;
 	}
 	
 }
