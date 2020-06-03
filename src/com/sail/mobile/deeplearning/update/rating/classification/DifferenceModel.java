@@ -2,18 +2,19 @@ package com.sail.mobile.deeplearning.update.rating.classification;
 
 public class DifferenceModel {
 	
-	public boolean changeApkSize;
-	public boolean changeNumAdLib;
-	public boolean changeNumPermission;
-	public boolean changeNumNormalPermission;
-	public boolean changeNumDangerousPermission;
-	public boolean changeNumCustomPermission;
-	public boolean changeMinSdkVersion;
-	public boolean changeTargetSdkVersion;
-	public boolean changeNumActivity;
-	public boolean changeNumService;
-	public boolean changeNumReceiver;
-	public boolean changeNumIntent;
+	public double changeApkSize;
+	public double changeNumAdLib;
+	public double changeNumPermission;
+	public double changeNumNormalPermission;
+	public double changeNumDangerousPermission;
+	public double changeNumCustomPermission;
+	public double changeMinSdkVersion;
+	public double changeTargetSdkVersion;
+	public double changeNumActivity;
+	public double changeNumService;
+	public double changeNumReceiver;
+	public double changeNumIntent;
+	
 	public double  increaseDecreaseApkSize;
 	public double  increaseDecreaseNumAdLib;
 	public double  increaseDecreaseNumPermission;
@@ -27,76 +28,78 @@ public class DifferenceModel {
 	public double  increaseDecreaseNumIntent;
 	public double  increaseDecreaseNumReceiver;
 	
-	public boolean isChangeApkSize() {
+	
+	
+	public double getChangeApkSize() {
 		return changeApkSize;
 	}
-	public void setChangeApkSize(boolean changeApkSize) {
+	public void setChangeApkSize(double changeApkSize) {
 		this.changeApkSize = changeApkSize;
 	}
-	public boolean isChangeNumAdLib() {
+	public double getChangeNumAdLib() {
 		return changeNumAdLib;
 	}
-	public void setChangeNumAdLib(boolean changeNumAdLib) {
+	public void setChangeNumAdLib(double changeNumAdLib) {
 		this.changeNumAdLib = changeNumAdLib;
 	}
-	public boolean isChangeNumPermission() {
+	public double getChangeNumPermission() {
 		return changeNumPermission;
 	}
-	public void setChangeNumPermission(boolean changeNumPermission) {
+	public void setChangeNumPermission(double changeNumPermission) {
 		this.changeNumPermission = changeNumPermission;
 	}
-	public boolean isChangeNumNormalPermission() {
+	public double getChangeNumNormalPermission() {
 		return changeNumNormalPermission;
 	}
-	public void setChangeNumNormalPermission(boolean changeNumNormalPermission) {
+	public void setChangeNumNormalPermission(double changeNumNormalPermission) {
 		this.changeNumNormalPermission = changeNumNormalPermission;
 	}
-	public boolean isChangeNumDangerousPermission() {
+	public double getChangeNumDangerousPermission() {
 		return changeNumDangerousPermission;
 	}
-	public void setChangeNumDangerousPermission(boolean changeNumDangerousPermission) {
+	public void setChangeNumDangerousPermission(double changeNumDangerousPermission) {
 		this.changeNumDangerousPermission = changeNumDangerousPermission;
 	}
-	public boolean isChangeNumCustomPermission() {
+	public double getChangeNumCustomPermission() {
 		return changeNumCustomPermission;
 	}
-	public void setChangeNumCustomPermission(boolean changeNumCustomPermission) {
+	public void setChangeNumCustomPermission(double changeNumCustomPermission) {
 		this.changeNumCustomPermission = changeNumCustomPermission;
 	}
-	public boolean isChangeMinSdkVersion() {
+	public double getChangeMinSdkVersion() {
 		return changeMinSdkVersion;
 	}
-	public void setChangeMinSdkVersion(boolean changeMinSdkVersion) {
+	public void setChangeMinSdkVersion(double changeMinSdkVersion) {
 		this.changeMinSdkVersion = changeMinSdkVersion;
 	}
-	public boolean isChangeTargetSdkVersion() {
+	public double getChangeTargetSdkVersion() {
 		return changeTargetSdkVersion;
 	}
-	public void setChangeTargetSdkVersion(boolean changeTargetSdkVersion) {
+	public void setChangeTargetSdkVersion(double changeTargetSdkVersion) {
 		this.changeTargetSdkVersion = changeTargetSdkVersion;
 	}
-	public boolean isChangeNumActivity() {
+	public double getChangeNumActivity() {
 		return changeNumActivity;
 	}
-	public void setChangeNumActivity(boolean changeNumActivity) {
+	public void setChangeNumActivity(double changeNumActivity) {
 		this.changeNumActivity = changeNumActivity;
 	}
-	public boolean isChangeNumService() {
+	public double getChangeNumService() {
 		return changeNumService;
 	}
-	public void setChangeNumService(boolean changeNumService) {
+	public void setChangeNumService(double changeNumService) {
 		this.changeNumService = changeNumService;
 	}
-	public boolean isChangeNumReceiver() {
+	public double getChangeNumReceiver() {
 		return changeNumReceiver;
 	}
-	public void setChangeNumReceiver(boolean changeNumReceiver) {
+	public void setChangeNumReceiver(double changeNumReceiver) {
 		this.changeNumReceiver = changeNumReceiver;
 	}
-	public boolean isChangeNumIntent() {
+	public double getChangeNumIntent() {
 		return changeNumIntent;
 	}
-	public void setChangeNumIntent(boolean changeNumIntent) {
+	public void setChangeNumIntent(double changeNumIntent) {
 		this.changeNumIntent = changeNumIntent;
 	}
 	public double getIncreaseDecreaseApkSize() {

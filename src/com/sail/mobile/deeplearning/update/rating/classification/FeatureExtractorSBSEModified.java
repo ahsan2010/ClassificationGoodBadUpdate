@@ -346,18 +346,18 @@ public class FeatureExtractorSBSEModified {
 				fm.setIncreaseDecreaseNumReceiver(df.getIncreaseDecreaseNumReceiver());
 				fm.setIncreaseDecreaseNumIntent(df.getIncreaseDecreaseNumIntent());
 				
-				fm.setChangeApkSize(df.isChangeApkSize());
-				fm.setChangeNumAdLib(df.isChangeNumAdLib());
-				fm.setChangeMinSdkVersion(df.isChangeMinSdkVersion());
-				fm.setChangeTargetSdkVersion(df.isChangeTargetSdkVersion());
-				fm.setChangeNumPermission(df.isChangeNumPermission());
-				fm.setChangeNumDangerousPermission(df.isChangeNumDangerousPermission());
-				fm.setChangeNumNormalPermission(df.isChangeNumNormalPermission());
-				fm.setChangeNumCustomPermission(df.isChangeNumCustomPermission());
-				fm.setChangeNumActivity(df.isChangeNumActivity());
-				fm.setChangeNumService(df.isChangeNumService());
-				fm.setChangeNumReceiver(df.isChangeNumReceiver());
-				fm.setChangeNumIntent(df.isChangeNumIntent());
+				fm.setChangeApkSize(df.getChangeApkSize());
+				fm.setChangeNumAdLib(df.getChangeNumAdLib());
+				fm.setChangeMinSdkVersion(df.getChangeMinSdkVersion());
+				fm.setChangeTargetSdkVersion(df.getChangeTargetSdkVersion());
+				fm.setChangeNumPermission(df.getChangeNumPermission());
+				fm.setChangeNumDangerousPermission(df.getChangeNumDangerousPermission());
+				fm.setChangeNumNormalPermission(df.getChangeNumNormalPermission());
+				fm.setChangeNumCustomPermission(df.getChangeNumCustomPermission());
+				fm.setChangeNumActivity(df.getChangeNumActivity());
+				fm.setChangeNumService(df.getChangeNumService());
+				fm.setChangeNumReceiver(df.getChangeNumReceiver());
+				fm.setChangeNumIntent(df.getChangeNumIntent());
 				
 				fm.setPreviousAllUpdatesMedianAggregatedRating(prevAggregatedRatingStat.getPercentile(50));
 				fm.setPreviousAllUpdatsMedianNegativeRatingRatio(prevNegativeRatingRatioStat.getPercentile(50));
@@ -409,18 +409,18 @@ public class FeatureExtractorSBSEModified {
 		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumReceiver()));
 		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumIntent()));
 		
-		writer.write(fm.isChangeApkSize() ? "1" : "0");
-		writer.write(fm.isChangeNumAdLib() ? "1" : "0");
-		writer.write(fm.isChangeMinSdkVersion() ? "1" : "0");
-		writer.write(fm.isChangeTargetSdkVersion() ? "1" : "0");
-		writer.write(fm.isChangeNumPermission() ? "1" : "0");
-		writer.write(fm.isChangeNumDangerousPermission() ? "1" : "0");
-		writer.write(fm.isChangeNumNormalPermission() ? "1" : "0");
-		writer.write(fm.isChangeNumCustomPermission() ? "1" : "0");
-		writer.write(fm.isChangeNumActivity() ? "1" : "0");
-		writer.write(fm.isChangeNumService() ? "1" : "0");
-		writer.write(fm.isChangeNumReceiver() ? "1" : "0");
-		writer.write(fm.isChangeNumIntent() ? "1" : "0");
+		writer.write(String.format("%.4f", fm.getChangeApkSize()));
+		writer.write(String.format("%.0", fm.getChangeNumAdLib()));
+		writer.write(String.format("%.0", fm.getChangeMinSdkVersion()));
+		writer.write(String.format("%.0", fm.getChangeTargetSdkVersion()));
+		writer.write(String.format("%.0", fm.getChangeNumPermission()));
+		writer.write(String.format("%.0", fm.getChangeNumDangerousPermission()));
+		writer.write(String.format("%.0", fm.getChangeNumNormalPermission()));
+		writer.write(String.format("%.0", fm.getChangeNumCustomPermission()));
+		writer.write(String.format("%.0", fm.getChangeNumActivity()));
+		writer.write(String.format("%.0", fm.getChangeNumService()));
+		writer.write(String.format("%.0", fm.getChangeNumReceiver()));
+		writer.write(String.format("%.0", fm.getChangeNumIntent()));
 		
 		writer.write(String.format("%.4f", fm.getPreviousAllUpdatesMedianAggregatedRating()));
 		writer.write(String.format("%.4f", fm.getPreviousAllUpdatsMedianNegativeRatingRatio()));
@@ -459,6 +459,30 @@ public class FeatureExtractorSBSEModified {
 		return false;
 	}
 	
+	public double countChange(int newValue, int oldValue){
+		return (newValue - oldValue);
+	}
+	
+	public double countChange(double newValue, double oldValue){
+		return (newValue - oldValue);
+	}
+	
+	public double countChange(Set<String> newValues, Set<String> oldValues){
+		double totalChange = 0;
+		
+		if(oldValues.size() != newValues.size()){
+			return 0;
+		}
+		
+		for(String oldValue : oldValues){
+			if(!newValues.contains(oldValue)){
+				totalChange ++;
+			}
+		}
+		return totalChange;
+	}
+	
+	
 	public DescriptiveStatistics getReleaseTimeStats(ArrayList<AppAnalyticsModel> updates, int index){
 		DescriptiveStatistics stat = new DescriptiveStatistics();
 		for (int i = index ; i >= 1 ; i -- ){
@@ -492,93 +516,97 @@ public class FeatureExtractorSBSEModified {
 	
 	public DifferenceModel getDiffUpdateChange(AppAnalyticsModel prevUpdate, AppAnalyticsModel update,
 			PermissionModel permissionForUpdate, PermissionModel permissionForPreviousUpdate) throws Exception{
+		
 		// sdk change
-		double targetSdkChange = 100.0 * (double)(update.getTargetSdkVersion() - 
-				prevUpdate.getTargetSdkVersion())/(double)prevUpdate.getTargetSdkVersion();
-		double minSdkChange = 100.0 * (double)(update.getMinSdkVersion() - 
-				prevUpdate.getMinSdkVersion())/(double)prevUpdate.getMinSdkVersion();
+		double targetSdkChange = 100.0 * (countChange(update.getTargetSdkVersion(),
+				prevUpdate.getTargetSdkVersion())/(double)prevUpdate.getTargetSdkVersion());
+		double minSdkChange = 100.0 * (countChange(update.getMinSdkVersion(), 
+				prevUpdate.getMinSdkVersion())/(double)prevUpdate.getMinSdkVersion());
 		
 		// permission
-		double permissionChange = 100.0 * (double)(update.getPermissionList().size() - 
-				prevUpdate.getPermissionList().size())/(double)prevUpdate.getPermissionList().size();
+		double permissionChange = 100.0 * (countChange(update.getPermissionList(),
+				prevUpdate.getPermissionList())/(double)prevUpdate.getPermissionList().size());
 		
-		double dangPermChange = 100.0 * (double) (permissionForUpdate.getDangerousPermissionList().size() - 
-				permissionForPreviousUpdate.getDangerousPermissionList().size()) /
-				(double)Math.max(permissionForPreviousUpdate.getDangerousPermissionList().size(),1);
+		double dangPermChange = 100.0 * (countChange(permissionForUpdate.getDangerousPermissionList(), 
+				permissionForPreviousUpdate.getDangerousPermissionList()) /
+				(double)Math.max(permissionForPreviousUpdate.getDangerousPermissionList().size(),1));
 		
-		double normPermChange = 100.0 * (double) (permissionForUpdate.getNormalPermissionList().size() - 
-				permissionForPreviousUpdate.getNormalPermissionList().size()) /
+		double normPermChange = 100.0 * (countChange(permissionForUpdate.getNormalPermissionList(), 
+				permissionForPreviousUpdate.getNormalPermissionList())) /
 				(double)Math.max(permissionForPreviousUpdate.getNormalPermissionList().size(),1);
 		
-		double customPermChange = 100.0 *  (double) (permissionForUpdate.getCustomPermissionList().size() - 
-				permissionForPreviousUpdate.getCustomPermissionList().size()) /
+		double customPermChange = 100.0 * (countChange(permissionForUpdate.getCustomPermissionList() , 
+				permissionForPreviousUpdate.getCustomPermissionList())) /
 				(double)Math.max(permissionForPreviousUpdate.getCustomPermissionList().size(),1);
 		
 		// apk change
-		double apkSizeChange = 100.0 * (double)(update.getApkSizeByte() - prevUpdate.getApkSizeByte()) /
-				(double)(prevUpdate.getApkSizeByte());
+		double apkSizeChange = 100.0 *(countChange(update.getApkSizeByte(), prevUpdate.getApkSizeByte()) /
+				(double)(prevUpdate.getApkSizeByte()));
 		
 		// ad lib change
-		double adLibChange = 100.0 * (double)(update.getAdLibraryList().size() - prevUpdate.getAdLibraryList().size()) /
-				(double) (Math.max(prevUpdate.getAdLibraryList().size(),1));
+		double adLibChange = 100.0 * (countChange(update.getAdLibraryList(), prevUpdate.getAdLibraryList()) /
+				(double) (Math.max(prevUpdate.getAdLibraryList().size(),1)));
 		
 		// manifest change
-		double activityChange = 100.0 * (double)(update.getActivityList().size() - prevUpdate.getActivityList().size()) /
-				(double) (Math.max(prevUpdate.getActivityList().size(),1));
+		double activityChange = 100.0 * (countChange(update.getActivityList(), prevUpdate.getActivityList()) /
+				(double) (Math.max(prevUpdate.getActivityList().size(),1)));
 		
-		double serviceChange = 100.0 * (double)(update.getServiceList().size() - prevUpdate.getServiceList().size()) /
-				(double) (Math.max(prevUpdate.getServiceList().size(),1));
+		double serviceChange = 100.0 * (countChange(update.getServiceList(), prevUpdate.getServiceList()) /
+				(double) (Math.max(prevUpdate.getServiceList().size(),1)));
 		
-		double receiverChange = 100.0 * (double)(update.getReceiverList().size() - prevUpdate.getReceiverList().size()) /
-				(double) (Math.max(prevUpdate.getReceiverList().size(),1));
+		double receiverChange = 100.0 * (countChange(update.getReceiverList(),prevUpdate.getReceiverList()) /
+				(double) (Math.max(prevUpdate.getReceiverList().size(),1)));
 		
-		double intentChange = 100.0 * (double)(update.getIntentList().size() - prevUpdate.getIntentList().size()) /
-				(double) (Math.max(prevUpdate.getIntentList().size(),1));
+		double intentChange = 100.0 * (countChange(update.getIntentList(), prevUpdate.getIntentList()) /
+				(double) (Math.max(prevUpdate.getIntentList().size(),1)));
 		
 		DifferenceModel df = new DifferenceModel();
 		
 		
 		// Apk Size
 		df.setIncreaseDecreaseApkSize(apkSizeChange);
-		df.setChangeApkSize(isChange(prevUpdate.getApkSizeByte(),update.getApkSizeByte()));
-		
-		// Ad lib
 		df.setIncreaseDecreaseNumAdLib(adLibChange);
-		df.setChangeNumAdLib(isChange(prevUpdate.getAdLibraryList().size(),update.getAdLibraryList().size()));
 		
-		// Permission
 		df.setIncreaseDecreaseNumPermission(permissionChange);
-		df.setChangeNumPermission(isChange(prevUpdate.getPermissionList(),update.getPermissionList()));
-		
 		df.setIncreaseDecreaseNumDangerousPermission(dangPermChange);
+		df.setIncreaseDecreaseNumNormalPermission(normPermChange);
+		df.setIncreaseDecreaseNumCustomPermission(customPermChange);
+		df.setIncreaseDecreaseMinSdkVersion(minSdkChange);
+		df.setIncreaseDecreaseTargetSdkVersion(targetSdkChange);
+		df.setIncreaseDecreaseNumActivity(activityChange);
+		df.setIncreaseDecreaseNumService(serviceChange);
+		df.setIncreaseDecreaseNumIntent(intentChange);
+		df.setIncreaseDecreaseNumReceiver(receiverChange);
+		
+		df.setChangeApkSize(countChange(prevUpdate.getApkSizeByte(),update.getApkSizeByte()));
+		df.setChangeNumAdLib(countChange(prevUpdate.getAdLibraryList(),update.getAdLibraryList()));
+		df.setChangeNumPermission(countChange(prevUpdate.getPermissionList(),update.getPermissionList()));
+		df.setChangeNumDangerousPermission(countChange(permissionForPreviousUpdate.getDangerousPermissionList(),
+				permissionForUpdate.getDangerousPermissionList()));
+		df.setChangeNumNormalPermission(countChange(permissionForPreviousUpdate.getNormalPermissionList(),permissionForUpdate.getNormalPermissionList()));
+		df.setChangeNumCustomPermission(countChange(permissionForPreviousUpdate.getCustomPermissionList(),
+				permissionForUpdate.getCustomPermissionList()));
+		df.setChangeMinSdkVersion(countChange(prevUpdate.getMinSdkVersion(), update.getMinSdkVersion()));
+		df.setChangeTargetSdkVersion(countChange(prevUpdate.getTargetSdkVersion(), update.getTargetSdkVersion()));
+		df.setChangeNumActivity(countChange(prevUpdate.getActivityList(),update.getActivityList()));
+		df.setChangeNumService(countChange(prevUpdate.getServiceList(),update.getServiceList()));
+		df.setChangeNumIntent(countChange(prevUpdate.getIntentList(),update.getIntentList()));
+		df.setChangeNumReceiver(countChange(prevUpdate.getReceiverList(),update.getReceiverList()));
+		
+		/*df.setChangeApkSize(isChange(prevUpdate.getApkSizeByte(),update.getApkSizeByte()));
+		df.setChangeNumAdLib(isChange(prevUpdate.getAdLibraryList().size(),update.getAdLibraryList().size()));
+		df.setChangeNumPermission(isChange(prevUpdate.getPermissionList(),update.getPermissionList()));
 		df.setChangeNumDangerousPermission(isChange(permissionForPreviousUpdate.getDangerousPermissionList(),
 				permissionForUpdate.getDangerousPermissionList()));
-		
-		df.setIncreaseDecreaseNumNormalPermission(normPermChange);
 		df.setChangeNumNormalPermission(isChange(permissionForPreviousUpdate.getNormalPermissionList(),permissionForUpdate.getNormalPermissionList()));
-		
-		df.setIncreaseDecreaseNumCustomPermission(customPermChange);
 		df.setChangeNumCustomPermission(isChange(permissionForPreviousUpdate.getCustomPermissionList(),
 				permissionForUpdate.getCustomPermissionList()));
-		
-		// Sdk version
-		df.setIncreaseDecreaseMinSdkVersion(minSdkChange);
 		df.setChangeMinSdkVersion(isChange(prevUpdate.getMinSdkVersion(), update.getMinSdkVersion()));
-		
-		df.setIncreaseDecreaseTargetSdkVersion(targetSdkChange);
 		df.setChangeTargetSdkVersion(isChange(prevUpdate.getTargetSdkVersion(), update.getTargetSdkVersion()));
-		
-		df.setIncreaseDecreaseNumActivity(activityChange);
 		df.setChangeNumActivity(isChange(prevUpdate.getActivityList(),update.getActivityList()));
-		
-		df.setIncreaseDecreaseNumService(serviceChange);
 		df.setChangeNumService(isChange(prevUpdate.getServiceList(),update.getServiceList()));
-		
-		df.setIncreaseDecreaseNumIntent(intentChange);
 		df.setChangeNumIntent(isChange(prevUpdate.getIntentList(),update.getIntentList()));
-		
-		df.setIncreaseDecreaseNumReceiver(receiverChange);
-		df.setChangeNumReceiver(isChange(prevUpdate.getReceiverList(),update.getReceiverList()));
+		df.setChangeNumReceiver(isChange(prevUpdate.getReceiverList(),update.getReceiverList()));*/
 		
 		
 		return df;
