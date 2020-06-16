@@ -102,7 +102,8 @@ public class FeatureExtractorSBSEModified {
 		"Previous_update_aggregated_rating",
 		"Previous_update_negative_rating_percentage",
 		
-		"Target_label"
+		"Target_label",
+		"Negativity_ratio"
 		
 	});
 
@@ -362,6 +363,7 @@ public class FeatureExtractorSBSEModified {
 				
 				fm.setTargetValue(calculateTargetUpdateLabel(update.getNegativityRatioWithMedian(), medianApproachNegitivityRatioStat));
 				
+				fm.setNegativityRatio(update.getNegativityRatioWithMedian());
 				writeFeaturesToFile(writer,fm);
 				
 			  /*System.out.println(update.getPackageName() + " " + update.getVersionCode());
@@ -436,6 +438,8 @@ public class FeatureExtractorSBSEModified {
 		
 		// Class level
 		writer.write(Integer.toString(fm.getTargetValue()));
+	
+		writer.write(String.format("%.4f", fm.getNegativityRatio()));
 		
 		writer.endRecord();
 		

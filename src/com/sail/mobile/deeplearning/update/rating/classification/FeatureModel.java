@@ -62,6 +62,8 @@ public class FeatureModel {
 	public double  negativityRatio;
 	public int     targetValue;
 	
+	
+	
 	public String getAppName() {
 		return appName;
 	}
