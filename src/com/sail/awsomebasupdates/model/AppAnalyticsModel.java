@@ -48,6 +48,7 @@ public class AppAnalyticsModel {
 	public double prevUpdatesTotalRatings;
 	
 	
+	
 	DescriptiveStatistics previousRatioNegativesStat = new DescriptiveStatistics();
 	
 	
@@ -317,5 +318,8 @@ public class AppAnalyticsModel {
 	}
 	public void setPreviousRatioNegativesStat(DescriptiveStatistics previousRatioNegativesStat) {
 		this.previousRatioNegativesStat = previousRatioNegativesStat;
+	}
+	public double getAPKSizeMegaByte(){
+		return (this.getApkSizeByte()/1000000);
 	}
 }

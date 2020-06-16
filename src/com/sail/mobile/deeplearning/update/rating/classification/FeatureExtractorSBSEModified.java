@@ -66,22 +66,22 @@ public class FeatureExtractorSBSEModified {
 		"Number_of_receiver", 
 		"Number_of_intent", 
 		
-		"Ratio_median_release_time",
-		"Diff_previous_release_time_day", 
+		"Prev_all_updates_median_release_time",
+		"Update_release_time_day", 
 		"Release_note_length_word", 
 		"Release_note_changed_word",
 		
 		"Change_Apk_size", 
 		"Change_Number_of_ad_libraries",
 		"Change_number_of_permission", 
-		"Change_number_of_dangeroud_permission",
+		"Change_number_of_dangerous_permission",
 		"Change_number_of_normal_permission", 
 		"change_number_of_custom_permission",
 		"Change_min_sdk_version", 
 		"Change_target_sdk_version",
 		"Change_number_of_activity", 
 		"Change_number_of_service", 
-		"Change_number_of_recevier", 
+		"Change_number_of_receiver", 
 		"Change_number_of_intent",
 		
 		"Increase/decrease_Apk_size", 
@@ -94,13 +94,13 @@ public class FeatureExtractorSBSEModified {
 		"Increase/decrease_target_sdk_version",
 		"Increase/decrease_number_of_activity", 
 		"Increase/decrease_number_of_service", 
-		"Increase/decrease_number_of_recevier", 
+		"Increase/decrease_number_of_receiver", 
 		"Increase/decrease_number_of_intent",
 		
 		"Previous_median_aggregated_rating", 
-		"Previous_median_negitive_rating_ratio",
-		"Previous_update_aggreated_rating",
-		"Previous_update_negative_rating_ratio",
+		"Previous_median_negative_rating_percentage",
+		"Previous_update_aggregated_rating",
+		"Previous_update_negative_rating_percentage",
 		
 		"Target_label"
 		
@@ -126,7 +126,7 @@ public class FeatureExtractorSBSEModified {
 		appUpdatesAnalyticList = FileUtil.readAppAnalyticsInfo(APP_ANALYTICS_FILE_PATH);
 		FileUtil.addedAppUpdateDailyRating(appUpdatesAnalyticList);
 		//RatingAnalyzer rat = new RatingAnalyzer(appUpdatesAnalyticList);
-		//updateRatingInfo = rat.generateUpdateRating();
+		//updateRatingInfo = rat.generateUpdateRating();	
 		//writeRatingInformationData(appUpdatesAnalyticList);
 	}
 	
@@ -261,7 +261,7 @@ public class FeatureExtractorSBSEModified {
 		double updatedWordCount = getWordCount(addedText);
 		double releaseNoteWordCount = getWordCount(prevUpdateCleanReleaseNote);
 		
-		perModified = 100.0 * ((double)(releaseNoteWordCount - updatedWordCount)/(Math.max(releaseNoteWordCount, 1)));
+		perModified = 100.0 * ((double)(updatedWordCount)/(Math.max(releaseNoteWordCount, 1)));
 		
 		return perModified;
 	}
@@ -276,15 +276,11 @@ public class FeatureExtractorSBSEModified {
 			writer.write(featureLevel);
 		}
 		writer.endRecord();
-		
+		int finishExtractingFeature = 0 ;
 		for(String appName : appUpdatesAnalyticList.keySet()){
 			ArrayList<AppAnalyticsModel> updates = appUpdatesAnalyticList.get(appName);
 			
 			for(int i = 1 ; i < updates.size() - 1 ; i ++){
-				
-				if(i > 10){
-					break;
-				}
 				
 				AppAnalyticsModel prevUpdate = updates.get(i - 1);
 				AppAnalyticsModel update = updates.get(i);
@@ -298,7 +294,7 @@ public class FeatureExtractorSBSEModified {
 				fm.setAppName(update.getPackageName());
 				fm.setVersionCode(update.getVersionCode());
 				fm.setReleaseDate(update.getReleaseDate());
-				fm.setApkSize(update.getApkSizeByte()/1000000);
+				fm.setApkSize(update.getAPKSizeMegaByte());
 				fm.setNumAdLibraries(update.getAdLibraryList().size());
 				fm.setNumPermissions(update.getPermissionList().size());
 				fm.setNumDangerousPermissions(permissionForUpdate.getDangerousPermissionList().size());
@@ -312,7 +308,7 @@ public class FeatureExtractorSBSEModified {
 				fm.setNumIntent(update.getIntentList().size());
 				
 				DescriptiveStatistics prevAggregatedRatingStat 		= getPrevStatAggratedRating(updates, i);
-				DescriptiveStatistics prevNegativeRatingRatioStat 	= getPrevStatNegativeRatingRatio(updates, i);
+				DescriptiveStatistics prevNegativeRatingPercentageStat 	= getPrevStatNegativeRatingPercentage(updates, i);
 				DescriptiveStatistics prevReleaseTime 				= getReleaseTimeStats(updates,i);
 				DifferenceModel df 									= getDiffUpdateChange(prevUpdate, update, permissionForUpdate, permissionForPreviousUpdate);
 				
@@ -325,7 +321,7 @@ public class FeatureExtractorSBSEModified {
 				double percentModifiedReleaseNote = getPercentModifiedUpdates(modifiedCleanReleaeNote, prevCleanReleaseNote);
 				
 				
-				int releaseTime = Days.daysBetween(update.getJodaReleaseDate(), prevUpdate.getJodaReleaseDate()).getDays();
+				int releaseTime = Days.daysBetween(prevUpdate.getJodaReleaseDate(),update.getJodaReleaseDate()).getDays();
 				
 				fm.setRatioMedianOfAllPreviousReleaseTime(prevReleaseTime.getPercentile(50));
 				fm.setUpdateReleaseTime(releaseTime);
@@ -360,15 +356,26 @@ public class FeatureExtractorSBSEModified {
 				fm.setChangeNumIntent(df.getChangeNumIntent());
 				
 				fm.setPreviousAllUpdatesMedianAggregatedRating(prevAggregatedRatingStat.getPercentile(50));
-				fm.setPreviousAllUpdatsMedianNegativeRatingRatio(prevNegativeRatingRatioStat.getPercentile(50));
+				fm.setPreviousAllUpdatsMedianNegativeRatingPercentage(prevNegativeRatingPercentageStat.getPercentile(50));
 				fm.setPreviousUpdateAggregatedRating(prevUpdate.getAggregatedRating());
-				fm.setPreviousUpdateNegativeRatingRatio(prevUpdate.getRatioNegativeRatings());
+				fm.setPreviousUpdateNegativeRatingPercentage(100.0 * prevUpdate.getRatioNegativeRatings());
 				
 				fm.setTargetValue(calculateTargetUpdateLabel(update.getNegativityRatioWithMedian(), medianApproachNegitivityRatioStat));
 				
 				writeFeaturesToFile(writer,fm);
+				
+			  /*System.out.println(update.getPackageName() + " " + update.getVersionCode());
+				System.out.println("Negative rating ratio: " + prevUpdate.getNegativeStars() + " " + prevUpdate.getPreviousRatioNegativesStat().getPercentile(50));
+				System.out.println("Prev TSDK: " + prevUpdate.getTargetSdkVersion() + " Pres TSDK: " + update.getTargetSdkVersion() +" CountDiff: " +
+				countChange(update.getTargetSdkVersion(),prevUpdate.getTargetSdkVersion()));
+				System.out.println("----------");
+			  */
+				
 			}
+			++finishExtractingFeature;
+			System.out.println("Finish ["+finishExtractingFeature+"] App: " + appName);
 		}
+		writer.close();
 	}
 
 	
@@ -396,19 +403,6 @@ public class FeatureExtractorSBSEModified {
 		writer.write(String.format("%.0f", fm.getReleaseNoteLengthWord()));
 		writer.write(String.format("%.4f", fm.getReleaseNoteModified()));
 		
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseApkSize()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumAdLib()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseMinSdkVersion()));
-		writer.write(String.format("%.4f", fm.getInceaseDecreaseTargetSdkVersion()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumPermission()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumDangerousPermission()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumNormalPermission()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumCustomPermission()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumActivity()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumService()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumReceiver()));
-		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumIntent()));
-		
 		writer.write(String.format("%.4f", fm.getChangeApkSize()));
 		writer.write(String.format("%.0f", fm.getChangeNumAdLib()));
 		writer.write(String.format("%.0f", fm.getChangeMinSdkVersion()));
@@ -422,10 +416,23 @@ public class FeatureExtractorSBSEModified {
 		writer.write(String.format("%.0f", fm.getChangeNumReceiver()));
 		writer.write(String.format("%.0f", fm.getChangeNumIntent()));
 		
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseApkSize()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumAdLib()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseMinSdkVersion()));
+		writer.write(String.format("%.4f", fm.getInceaseDecreaseTargetSdkVersion()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumPermission()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumDangerousPermission()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumNormalPermission()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumCustomPermission()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumActivity()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumService()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumReceiver()));
+		writer.write(String.format("%.4f", fm.getIncreaseDecreaseNumIntent()));
+		
 		writer.write(String.format("%.4f", fm.getPreviousAllUpdatesMedianAggregatedRating()));
-		writer.write(String.format("%.4f", fm.getPreviousAllUpdatsMedianNegativeRatingRatio()));
+		writer.write(String.format("%.4f", fm.getPreviousAllUpdatsMedianNegativeRatingPercentage()));
 		writer.write(String.format("%.4f", fm.getPreviousUpdateAggregatedRating()));
-		writer.write(String.format("%.4f", fm.getPreviousUpdateNegativeRatingRatio()));
+		writer.write(String.format("%.4f", fm.getPreviousUpdateNegativeRatingPercentage()));
 		
 		// Class level
 		writer.write(Integer.toString(fm.getTargetValue()));
@@ -460,22 +467,27 @@ public class FeatureExtractorSBSEModified {
 	}
 	
 	public double countChange(int newValue, int oldValue){
-		return (newValue - oldValue);
+		return (double)(newValue - oldValue);
 	}
 	
 	public double countChange(double newValue, double oldValue){
-		return (newValue - oldValue);
+		return (double)(newValue - oldValue);
 	}
 	
 	public double countChange(Set<String> newValues, Set<String> oldValues){
 		double totalChange = 0;
 		
-		if(oldValues.size() != newValues.size()){
-			return 0;
+		if(oldValues.size() == newValues.size()){
+			return 0.0;
 		}
 		
 		for(String oldValue : oldValues){
 			if(!newValues.contains(oldValue)){
+				totalChange ++;
+			}
+		}
+		for(String newValue : newValues){
+			if(!oldValues.contains(newValue)){
 				totalChange ++;
 			}
 		}
@@ -489,7 +501,7 @@ public class FeatureExtractorSBSEModified {
 			AppAnalyticsModel update = updates.get(i);
 			AppAnalyticsModel prevUpdate = updates.get(i - 1);
 			
-			int days = Days.daysBetween(update.getJodaReleaseDate(), prevUpdate.getJodaReleaseDate()).getDays();
+			int days = Days.daysBetween(prevUpdate.getJodaReleaseDate(),update.getJodaReleaseDate()).getDays();
 			stat.addValue(days);
 		}
 		
@@ -505,11 +517,11 @@ public class FeatureExtractorSBSEModified {
 		return stat;
 	}
 	
-	public DescriptiveStatistics getPrevStatNegativeRatingRatio(ArrayList<AppAnalyticsModel> updates, int index){
+	public DescriptiveStatistics getPrevStatNegativeRatingPercentage(ArrayList<AppAnalyticsModel> updates, int index){
 		DescriptiveStatistics stat = new DescriptiveStatistics();
 		for(int i = index - 1 ; i >= 0 ; i --){
 			AppAnalyticsModel update = updates.get(i);
-			stat.addValue(update.getRatioNegativeRatings());
+			stat.addValue(100.0 * update.getRatioNegativeRatings());
 		}
 		return stat;
 	}
@@ -518,9 +530,9 @@ public class FeatureExtractorSBSEModified {
 			PermissionModel permissionForUpdate, PermissionModel permissionForPreviousUpdate) throws Exception{
 		
 		// sdk change
-		double targetSdkChange = 100.0 * (countChange(update.getTargetSdkVersion(),
+		double targetSdkChange = 100.0 * ((double)countChange(update.getTargetSdkVersion(),
 				prevUpdate.getTargetSdkVersion())/(double)prevUpdate.getTargetSdkVersion());
-		double minSdkChange = 100.0 * (countChange(update.getMinSdkVersion(), 
+		double minSdkChange = 100.0 * ((double)countChange(update.getMinSdkVersion(), 
 				prevUpdate.getMinSdkVersion())/(double)prevUpdate.getMinSdkVersion());
 		
 		// permission
@@ -540,8 +552,8 @@ public class FeatureExtractorSBSEModified {
 				(double)Math.max(permissionForPreviousUpdate.getCustomPermissionList().size(),1);
 		
 		// apk change
-		double apkSizeChange = 100.0 *(countChange(update.getApkSizeByte(), prevUpdate.getApkSizeByte()) /
-				(double)(prevUpdate.getApkSizeByte()));
+		double apkSizeChange = 100.0 *(countChange(update.getAPKSizeMegaByte(), prevUpdate.getAPKSizeMegaByte()) /
+				(double)(prevUpdate.getAPKSizeMegaByte()));
 		
 		// ad lib change
 		double adLibChange = 100.0 * (countChange(update.getAdLibraryList(), prevUpdate.getAdLibraryList()) /
@@ -578,20 +590,21 @@ public class FeatureExtractorSBSEModified {
 		df.setIncreaseDecreaseNumIntent(intentChange);
 		df.setIncreaseDecreaseNumReceiver(receiverChange);
 		
-		df.setChangeApkSize(countChange(prevUpdate.getApkSizeByte(),update.getApkSizeByte()));
-		df.setChangeNumAdLib(countChange(prevUpdate.getAdLibraryList(),update.getAdLibraryList()));
-		df.setChangeNumPermission(countChange(prevUpdate.getPermissionList(),update.getPermissionList()));
-		df.setChangeNumDangerousPermission(countChange(permissionForPreviousUpdate.getDangerousPermissionList(),
-				permissionForUpdate.getDangerousPermissionList()));
-		df.setChangeNumNormalPermission(countChange(permissionForPreviousUpdate.getNormalPermissionList(),permissionForUpdate.getNormalPermissionList()));
-		df.setChangeNumCustomPermission(countChange(permissionForPreviousUpdate.getCustomPermissionList(),
-				permissionForUpdate.getCustomPermissionList()));
-		df.setChangeMinSdkVersion(countChange(prevUpdate.getMinSdkVersion(), update.getMinSdkVersion()));
-		df.setChangeTargetSdkVersion(countChange(prevUpdate.getTargetSdkVersion(), update.getTargetSdkVersion()));
-		df.setChangeNumActivity(countChange(prevUpdate.getActivityList(),update.getActivityList()));
-		df.setChangeNumService(countChange(prevUpdate.getServiceList(),update.getServiceList()));
-		df.setChangeNumIntent(countChange(prevUpdate.getIntentList(),update.getIntentList()));
-		df.setChangeNumReceiver(countChange(prevUpdate.getReceiverList(),update.getReceiverList()));
+		df.setChangeApkSize(countChange(update.getAPKSizeMegaByte(),prevUpdate.getAPKSizeMegaByte()));
+		df.setChangeNumAdLib(countChange(update.getAdLibraryList(),prevUpdate.getAdLibraryList()));
+		df.setChangeNumPermission(countChange(update.getPermissionList(),prevUpdate.getPermissionList()));
+		df.setChangeNumDangerousPermission(countChange(permissionForUpdate.getDangerousPermissionList(),
+				permissionForPreviousUpdate.getDangerousPermissionList()));
+		df.setChangeNumNormalPermission(countChange(permissionForUpdate.getNormalPermissionList(),
+				permissionForPreviousUpdate.getNormalPermissionList()));
+		df.setChangeNumCustomPermission(countChange(permissionForUpdate.getCustomPermissionList(),
+				permissionForPreviousUpdate.getCustomPermissionList()));
+		df.setChangeMinSdkVersion(countChange(update.getMinSdkVersion(), prevUpdate.getMinSdkVersion()));
+		df.setChangeTargetSdkVersion(countChange(update.getTargetSdkVersion(), prevUpdate.getTargetSdkVersion()));
+		df.setChangeNumActivity(countChange(update.getActivityList(),prevUpdate.getActivityList()));
+		df.setChangeNumService(countChange(update.getServiceList(),prevUpdate.getServiceList()));
+		df.setChangeNumIntent(countChange(update.getIntentList(),prevUpdate.getIntentList()));
+		df.setChangeNumReceiver(countChange(update.getReceiverList(),prevUpdate.getReceiverList()));
 		
 		/*df.setChangeApkSize(isChange(prevUpdate.getApkSizeByte(),update.getApkSizeByte()));
 		df.setChangeNumAdLib(isChange(prevUpdate.getAdLibraryList().size(),update.getAdLibraryList().size()));
@@ -608,6 +621,9 @@ public class FeatureExtractorSBSEModified {
 		df.setChangeNumIntent(isChange(prevUpdate.getIntentList(),update.getIntentList()));
 		df.setChangeNumReceiver(isChange(prevUpdate.getReceiverList(),update.getReceiverList()));*/
 		
+		/*System.out.println("Prev AdLib: " + prevUpdate.getAdLibraryList().size() + " Pres AdLib: " + update.getAdLibraryList().size() );
+		System.out.println("Change AdLib: " + df.getChangeNumAdLib() + " " + countChange(update.getAdLibraryList(),prevUpdate.getAdLibraryList()));
+		System.out.println("Diff TSDK: " + df.getChangeTargetSdkVersion());*/
 		
 		return df;
 		

@@ -56,9 +56,9 @@ public class FeatureModel {
 	public double  increaseDecreaseNumReceiver;
 	
 	public double  previousAllUpdatesMedianAggregatedRating;
-	public double  previousAllUpdatsMedianNegativeRatingRatio;
+	public double  previousAllUpdatsMedianNegativeRatingPercentage;
 	public double  previousUpdateAggregatedRating;
-	public double  previousUpdateNegativeRatingRatio;
+	public double  previousUpdateNegativeRatingPercentage;
 	public double  negativityRatio;
 	public int     targetValue;
 	
@@ -329,23 +329,17 @@ public class FeatureModel {
 	public void setPreviousAllUpdatesMedianAggregatedRating(double previousAllUpdatesMedianAggregatedRating) {
 		this.previousAllUpdatesMedianAggregatedRating = previousAllUpdatesMedianAggregatedRating;
 	}
-	public double getPreviousAllUpdatsMedianNegativeRatingRatio() {
-		return previousAllUpdatsMedianNegativeRatingRatio;
+	public double getPreviousAllUpdatsMedianNegativeRatingPercentage() {
+		return previousAllUpdatsMedianNegativeRatingPercentage;
 	}
-	public void setPreviousAllUpdatsMedianNegativeRatingRatio(double previousAllUpdatsMedianNegativeRatingRatio) {
-		this.previousAllUpdatsMedianNegativeRatingRatio = previousAllUpdatsMedianNegativeRatingRatio;
+	public void setPreviousAllUpdatsMedianNegativeRatingPercentage(double previousAllUpdatsMedianNegativeRatingPercentage) {
+		this.previousAllUpdatsMedianNegativeRatingPercentage = previousAllUpdatsMedianNegativeRatingPercentage;
 	}
 	public double getPreviousUpdateAggregatedRating() {
 		return previousUpdateAggregatedRating;
 	}
 	public void setPreviousUpdateAggregatedRating(double previousUpdateAggregatedRating) {
 		this.previousUpdateAggregatedRating = previousUpdateAggregatedRating;
-	}
-	public double getPreviousUpdateNegativeRatingRatio() {
-		return previousUpdateNegativeRatingRatio;
-	}
-	public void setPreviousUpdateNegativeRatingRatio(double previousUpdateNegativeRatingRatio) {
-		this.previousUpdateNegativeRatingRatio = previousUpdateNegativeRatingRatio;
 	}
 	public double getRatioMedianOfAllPreviousReleaseTime() {
 		return ratioMedianOfAllPreviousReleaseTime;
@@ -359,5 +353,10 @@ public class FeatureModel {
 	public void setUpdateReleaseTime(double updateReleaseTime) {
 		this.updateReleaseTime = updateReleaseTime;
 	}
-	
+	public double getPreviousUpdateNegativeRatingPercentage() {
+		return previousUpdateNegativeRatingPercentage;
+	}
+	public void setPreviousUpdateNegativeRatingPercentage(double previousUpdateNegativeRatingPercentage) {
+		this.previousUpdateNegativeRatingPercentage = previousUpdateNegativeRatingPercentage;
+	}
 }
